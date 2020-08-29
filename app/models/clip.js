@@ -9,7 +9,7 @@ export default Model.extend({
   plays: attr(),
 
   // RELATIONSHIPS
-  element: belongsTo('element'),
+  situation: belongsTo('situation'),
 
   // COMPUTED PROPERTIES
 

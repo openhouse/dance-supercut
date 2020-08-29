@@ -8,127 +8,127 @@
     "slug": "epilogue"
   },
   {
-    "element": "authority-known",
+    "situation": "authority-known",
     "slug": "authority-known"
   },
   {
-    "element": "authority-notified",
+    "situation": "authority-notified",
     "slug": "authority-notified"
   },
   {
-    "element": "character-encountered",
+    "situation": "character-encountered",
     "slug": "character-encountered"
   },
   {
-    "element": "collaboration",
+    "situation": "collaboration",
     "slug": "collaboration"
   },
   {
-    "element": "collaborator-patience",
+    "situation": "collaborator-patience",
     "slug": "collaborator-patience"
   },
   {
-    "element": "critical-component",
+    "situation": "critical-component",
     "slug": "critical-component"
   },
   {
-    "element": "critical-dimension",
+    "situation": "critical-dimension",
     "slug": "critical-dimension"
   },
   {
-    "element": "dramatis-personae",
+    "situation": "dramatis-personae",
     "slug": "dramatis-personae"
   },
   {
-    "element": "dream-manifest",
+    "situation": "dream-manifest",
     "slug": "dream-manifest"
   },
   {
-    "element": "dream",
+    "situation": "dream",
     "slug": "dream"
   },
   {
-    "element": "dreamer-appears",
+    "situation": "dreamer-appears",
     "slug": "dreamer-appears"
   },
   {
-    "element": "friend-has-idea",
+    "situation": "friend-has-idea",
     "slug": "friend-has-idea"
   },
   {
-    "element": "friend-member",
+    "situation": "friend-member",
     "slug": "friend-member"
   },
   {
-    "element": "immersed",
+    "situation": "immersed",
     "slug": "immersed"
   },
   {
-    "element": "lacks-collaboration",
+    "situation": "lacks-collaboration",
     "slug": "lacks-collaboration"
   },
   {
-    "element": "lacks-collaboration",
+    "situation": "lacks-collaboration",
     "slug": "lacks-collaboration-2"
   },
   {
-    "element": "lacks-collaboration",
+    "situation": "lacks-collaboration",
     "slug": "lacks-collaboration-3"
   },
   {
-    "element": "lacks-component",
+    "situation": "lacks-component",
     "slug": "lacks-component"
   },
   {
-    "element": "lacks-dimension",
+    "situation": "lacks-dimension",
     "slug": "lacks-dimension"
   },
   {
-    "element": "lacks-patience",
+    "situation": "lacks-patience",
     "slug": "lacks-patience"
   },
   {
-    "element": "passed-scale-test",
+    "situation": "passed-scale-test",
     "slug": "passed-scale-test"
   },
   {
-    "element": "passed-trial",
+    "situation": "passed-trial",
     "slug": "passed-trial"
   },
   {
-    "element": "passed-turbulence-test",
+    "situation": "passed-turbulence-test",
     "slug": "passed-turbulence-test"
   },
   {
-    "element": "plan-complete",
+    "situation": "plan-complete",
     "slug": "plan-complete"
   },
   {
-    "element": "project-member",
+    "situation": "project-member",
     "slug": "project-member"
   },
   {
-    "element": "project-underway",
+    "situation": "project-underway",
     "slug": "project-underway"
   },
   {
-    "element": "scale-test",
+    "situation": "scale-test",
     "slug": "scale-test"
   },
   {
-    "element": "stranger-has-idea",
+    "situation": "stranger-has-idea",
     "slug": "stranger-has-idea"
   },
   {
-    "element": "stranger-member",
+    "situation": "stranger-member",
     "slug": "stranger-member"
   },
   {
-    "element": "trial",
+    "situation": "trial",
     "slug": "trial"
   },
   {
-    "element": "turbulence-test",
+    "situation": "turbulence-test",
     "slug": "turbulence-test"
   }
 ]

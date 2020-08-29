@@ -10,9 +10,9 @@ export default Route.extend({
   store: service(),
   /*
     Fetch operators and clips
-    Infer elements
+    Infer situations
     Add to store
-    Return operators, elements, clips as ember data
+    Return operators, situations, clips as ember data
   */
   model() {
     let store = this.get('store');
@@ -23,18 +23,18 @@ export default Route.extend({
     return hash(promises).then(function (results) {
       log(results);
 
-      // collect elements referenced in results
-      let elements = [];
-      let addElement = (element) => {
-        if (!elements.includes(element)) {
-          elements.push(element);
+      // collect situations referenced in results
+      let situations = [];
+      let addsituation = (situation) => {
+        if (!situations.includes(situation)) {
+          situations.push(situation);
         }
       };
 
       // collect data as JSONapi objects
       let data = [];
 
-      // operators have elements as preconditions, additions, deletions
+      // operators have situations as preconditions, additions, deletions
       results.operators.forEach((operator) => {
         let item = {
           type: 'operator',
@@ -60,32 +60,32 @@ export default Route.extend({
             },
           },
         };
-        operator.preconditions.forEach((element) => {
+        operator.preconditions.forEach((situation) => {
           item.relationships.preconditions.data.push({
-            type: 'element',
-            id: element,
+            type: 'situation',
+            id: situation,
           });
-          addElement(element);
+          addsituation(situation);
         });
-        operator.additions.forEach((element) => {
+        operator.additions.forEach((situation) => {
           item.relationships.additions.data.push({
-            type: 'element',
-            id: element,
+            type: 'situation',
+            id: situation,
           });
-          addElement(element);
+          addsituation(situation);
         });
-        operator.deletions.forEach((element) => {
+        operator.deletions.forEach((situation) => {
           item.relationships.deletions.data.push({
-            type: 'element',
-            id: element,
+            type: 'situation',
+            id: situation,
           });
-          addElement(element);
+          addsituation(situation);
         });
 
         data.push(item);
       });
 
-      // clips belong to elements
+      // clips belong to situations
       results.clips.forEach((clip) => {
         let item = {
           type: 'clip',
@@ -94,27 +94,27 @@ export default Route.extend({
             slug: clip.slug,
           },
         };
-        if (isPresent(clip.element)) {
+        if (isPresent(clip.situation)) {
           item.relationships = {
-            element: {
+            situation: {
               data: {
-                type: 'element',
-                id: clip.element,
+                type: 'situation',
+                id: clip.situation,
               },
             },
           };
-          addElement(clip.element);
+          addsituation(clip.situation);
         }
         data.push(item);
       });
 
-      // add elements
-      elements.forEach((element) => {
+      // add situations
+      situations.forEach((situation) => {
         let item = {
-          type: 'element',
-          id: element,
+          type: 'situation',
+          id: situation,
           attributes: {
-            slug: element,
+            slug: situation,
           },
         };
         data.push(item);
