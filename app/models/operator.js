@@ -5,7 +5,7 @@ export default Model.extend({
   name: attr(),
 
   // RELATIONSHIPS
-  preconditions: hasMany('situation', { inverse: 'asPreconditions' }),
-  additions: hasMany('situation', { inverse: 'asAdditions' }),
-  deletions: hasMany('situation', { inverse: 'asDeletions' }),
+  preconditions: hasMany('signified', { inverse: 'asPreconditions' }),
+  additions: hasMany('signified', { inverse: 'asAdditions' }),
+  deletions: hasMany('signified', { inverse: 'asDeletions' }),
 });

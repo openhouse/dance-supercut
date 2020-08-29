@@ -67,26 +67,26 @@ export default Component.extend({
         labelStyle: 'font-size: 1em; fill: #a7a8a6;',
         style: 'fill: #080d0a; stroke: #080d0a;',
       });
-      operator.preconditions.forEach((situation) => {
-        g.setNode(situation.id, {
-          label: this.splitLines(situation.slug),
+      operator.preconditions.forEach((signified) => {
+        g.setNode(signified.id, {
+          label: this.splitLines(signified.slug),
           labelStyle: 'font-size: 1em; fill: #a7a8a6;',
           style: 'fill: #080d0a; stroke: #080d0a;',
         });
-        g.setEdge(situation.id, operator.id, {
+        g.setEdge(signified.id, operator.id, {
           weight: 1,
           curve: d3.curveBasis,
           style: 'stroke: #7b7b7b; fill: transparent;',
           arrowheadStyle: 'stroke: transparent; fill: #7b7b7b;',
         });
       });
-      operator.additions.forEach((situation) => {
-        g.setNode(situation.id, {
-          label: this.splitLines(situation.slug),
+      operator.additions.forEach((signified) => {
+        g.setNode(signified.id, {
+          label: this.splitLines(signified.slug),
           labelStyle: 'font-size: 1em; fill: #a7a8a6;',
           style: 'fill: #080d0a; stroke: #080d0a;',
         });
-        g.setEdge(operator.id, situation.id, {
+        g.setEdge(operator.id, signified.id, {
           weight: 1,
           curve: d3.curveBasis,
           style: 'stroke: #7b7b7b; fill: transparent;',

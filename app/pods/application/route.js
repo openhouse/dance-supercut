@@ -10,9 +10,9 @@ export default Route.extend({
   store: service(),
   /*
     Fetch operators and clips
-    Infer situations
+    Infer signifieds
     Add to store
-    Return operators, situations, clips as ember data
+    Return operators, signifieds, clips as ember data
   */
   model() {
     let store = this.get('store');
@@ -23,18 +23,18 @@ export default Route.extend({
     return hash(promises).then(function (results) {
       log(results);
 
-      // collect situations referenced in results
-      let situations = [];
-      let addsituation = (situation) => {
-        if (!situations.includes(situation)) {
-          situations.push(situation);
+      // collect signifieds referenced in results
+      let signifieds = [];
+      let addsignified = (signified) => {
+        if (!signifieds.includes(signified)) {
+          signifieds.push(signified);
         }
       };
 
       // collect data as JSONapi objects
       let data = [];
 
-      // operators have situations as preconditions, additions, deletions
+      // operators have signifieds as preconditions, additions, deletions
       results.operators.forEach((operator) => {
         let item = {
           type: 'operator',
@@ -60,32 +60,32 @@ export default Route.extend({
             },
           },
         };
-        operator.preconditions.forEach((situation) => {
+        operator.preconditions.forEach((signified) => {
           item.relationships.preconditions.data.push({
-            type: 'situation',
-            id: situation,
+            type: 'signified',
+            id: signified,
           });
-          addsituation(situation);
+          addsignified(signified);
         });
-        operator.additions.forEach((situation) => {
+        operator.additions.forEach((signified) => {
           item.relationships.additions.data.push({
-            type: 'situation',
-            id: situation,
+            type: 'signified',
+            id: signified,
           });
-          addsituation(situation);
+          addsignified(signified);
         });
-        operator.deletions.forEach((situation) => {
+        operator.deletions.forEach((signified) => {
           item.relationships.deletions.data.push({
-            type: 'situation',
-            id: situation,
+            type: 'signified',
+            id: signified,
           });
-          addsituation(situation);
+          addsignified(signified);
         });
 
         data.push(item);
       });
 
-      // clips belong to situations
+      // clips belong to signifieds
       results.clips.forEach((clip) => {
         let item = {
           type: 'clip',
@@ -94,27 +94,27 @@ export default Route.extend({
             slug: clip.slug,
           },
         };
-        if (isPresent(clip.situation)) {
+        if (isPresent(clip.signified)) {
           item.relationships = {
-            situation: {
+            signified: {
               data: {
-                type: 'situation',
-                id: clip.situation,
+                type: 'signified',
+                id: clip.signified,
               },
             },
           };
-          addsituation(clip.situation);
+          addsignified(clip.signified);
         }
         data.push(item);
       });
 
-      // add situations
-      situations.forEach((situation) => {
+      // add signifieds
+      signifieds.forEach((signified) => {
         let item = {
-          type: 'situation',
-          id: situation,
+          type: 'signified',
+          id: signified,
           attributes: {
-            slug: situation,
+            slug: signified,
           },
         };
         data.push(item);
@@ -127,7 +127,7 @@ export default Route.extend({
       });
       return {
         operators: store.peekAll('operator'),
-        situations: store.peekAll('situation'),
+        signifieds: store.peekAll('signified'),
         clips: store.peekAll('clip'),
       };
     });
