@@ -127,6 +127,7 @@ export default Route.extend({
       });
       return {
         operators: store.peekAll('operator'),
+        situations: store.peekAll('situation'),
         clips: store.peekAll('clip'),
       };
     });
