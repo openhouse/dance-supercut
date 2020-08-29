@@ -1,0 +1,247 @@
+[
+  {
+    "name": "Dreamer has irrational dream.",
+    "preconditions": ["dreamer-appears"],
+    "additions": ["dream", "lacks-collaboration"],
+    "deletions": ["dreamer-appears", "dream-manifest"]
+  },
+  {
+    "name": "Dreamer tells dream to friend as idea.",
+    "preconditions": ["dream"],
+    "additions": ["friend-has-idea"],
+    "deletions": []
+  },
+  {
+    "name": "Dreamer tells dream to stranger as idea.",
+    "preconditions": ["dream"],
+    "additions": ["stranger-has-idea"],
+    "deletions": []
+  },
+  {
+    "name": "Friend hears idea as plan, joins as project member.",
+    "preconditions": ["friend-has-idea"],
+    "additions": ["friend-member", "project-member", "lacks-collaboration"],
+    "deletions": []
+  },
+  {
+    "name": "Stranger hears idea as plan, joins as project member.",
+    "preconditions": ["stranger-has-idea"],
+    "additions": ["stranger-member", "project-member", "lacks-collaboration"],
+    "deletions": []
+  },
+  {
+    "name": "Stranger tells friend idea.",
+    "preconditions": ["stranger-has-idea"],
+    "additions": ["friend-has-idea"],
+    "deletions": []
+  },
+  {
+    "name": "Friend tells stranger idea.",
+    "preconditions": ["friend-has-idea"],
+    "additions": ["stranger-has-idea"],
+    "deletions": []
+  },
+  {
+    "name": "Project members form project collaboration.",
+    "preconditions": ["project-member", "lacks-collaboration"],
+    "additions": ["collaborator-patience", "lacks-component", "lacks-dimension", "collaboration"],
+    "deletions": ["lacks-collaboration", "lacks-patience"]
+  },
+  {
+    "name": "Project members engineer critical project component.",
+    "preconditions": ["collaboration", "friend-member"],
+    "additions": ["critical-component"],
+    "deletions": ["lacks-component"]
+  },
+  {
+    "name": "Project members engineer resilience into plan, add critical project dimension.",
+    "preconditions": ["collaboration", "stranger-member"],
+    "additions": ["critical-dimension"],
+    "deletions": ["lacks-dimension"]
+  },
+  {
+    "name": "Project members perfect plan, add critical project components and dimensions.",
+    "preconditions": ["collaboration", "stranger-member", "friend-member"],
+    "additions": ["critical-component", "critical-dimension"],
+    "deletions": ["collaborator-patience", "lacks-component", "lacks-dimension"]
+  },
+  {
+    "name": "Project non-member appears, lends wise suggestion, adds critical project component.",
+    "preconditions": ["collaboration"],
+    "additions": ["critical-component"],
+    "deletions": ["lacks-component"]
+  },
+  {
+    "name": "Project non-member appears, warns against plan, discourages project members.",
+    "preconditions": ["collaboration"],
+    "additions": ["critical-dimension", "lacks-patience"],
+    "deletions": ["friend-has-idea", "stranger-has-idea", "lacks-dimension"]
+  },
+  {
+    "name": "Project members rush, eagerly commence plan.",
+    "preconditions": ["collaboration", "collaborator-patience"],
+    "additions": ["project-underway"],
+    "deletions": ["dream"]
+  },
+  {
+    "name": "Plan commences before ready, after intended.",
+    "preconditions": ["collaboration", "collaborator-patience"],
+    "additions": ["project-underway"],
+    "deletions": ["dream"]
+  },
+  {
+    "name": "Plan takes too long to commence.",
+    "preconditions": ["collaboration", "lacks-patience"],
+    "additions": ["lacks-collaboration"],
+    "deletions": ["collaboration", "friend-member", "stranger-member"]
+  },
+  {
+    "name": "Plan does not commence, project members dissipate, remain friends.",
+    "preconditions": ["collaboration"],
+    "additions": ["lacks-collaboration"],
+    "deletions": ["collaboration"]
+  },
+  {
+    "name": "Authority responsible for plan's domain appears, exits.",
+    "preconditions": ["project-underway"],
+    "additions": ["authority-known"],
+    "deletions": []
+  },
+  {
+    "name": "Project immerses project members into project story world.",
+    "preconditions": ["project-underway", "project-member"],
+    "additions": ["immersed"],
+    "deletions": []
+  },
+  {
+    "name": "Project members undergo personal ordeals of transformation, become dramatis personae with respect to project story world.",
+    "preconditions": ["project-underway", "project-member", "immersed"],
+    "additions": ["dramatis-personae"],
+    "deletions": []
+  },
+  {
+    "name": "Character encounters project, recognizes dramatis personae, lends wise suggestion, adds critical project component.",
+    "preconditions": ["project-underway", "dramatis-personae"],
+    "additions": ["character-encountered", "critical-component"],
+    "deletions": ["lacks-component"]
+  },
+  {
+    "name": "Character encounters project, recognizes dramatis personae, lends wise suggestion, add critical project dimension.",
+    "preconditions": ["project-underway", "dramatis-personae"],
+    "additions": ["character-encountered", "critical-dimension"],
+    "deletions": ["lacks-dimension"]
+  },
+  {
+    "name": "Character encounters project, recognizes dramatis personae, joins as project member.",
+    "preconditions": ["project-underway", "dramatis-personae"],
+    "additions": ["character-encountered", "stranger-member", "lacks-collaboration"],
+    "deletions": []
+  },
+  {
+    "name": "Character encounters project, recognizes dramatis personae, tells stranger idea.",
+    "preconditions": ["project-underway", "dramatis-personae"],
+    "additions": ["character-encountered", "stranger-has-idea"],
+    "deletions": []
+  },
+  {
+    "name": "Character encounters project, notifies authority.",
+    "preconditions": ["project-underway"],
+    "additions": ["character-encountered", "authority-notified"],
+    "deletions": []
+  },
+  {
+    "name": "Character encounters project, observes insufficient project component, notifies authority.",
+    "preconditions": ["project-underway", "critical-dimension", "lacks-component"],
+    "additions": ["character-encountered", "authority-notified"],
+    "deletions": []
+  },
+  {
+    "name": "Character encounters project, observes unconsidered project diminsion, notifies authority.",
+    "preconditions": ["project-underway", "lacks-dimension"],
+    "additions": ["character-encountered", "authority-notified"],
+    "deletions": []
+  },
+  {
+    "name": "Authority inspects project.",
+    "preconditions": ["project-underway", "authority-known", "authority-notified"],
+    "additions": ["trial"],
+    "deletions": []
+  },
+  {
+    "name": "Authority finds component missing.",
+    "preconditions": ["trial", "lacks-component"],
+    "additions": [],
+    "deletions": ["trial", "project-underway"]
+  },
+  {
+    "name": "Authority finds dimension missing.",
+    "preconditions": ["trial", "lacks-dimension"],
+    "additions": [],
+    "deletions": ["trial", "project-underway"]
+  },
+  {
+    "name": "Resilience of plan obscures irrationality of dream, defers Authority.",
+    "preconditions": ["trial", "critical-component", "critical-dimension"],
+    "additions": ["passed-trial"],
+    "deletions": ["trial"]
+  },
+  {
+    "name": "Project encounters turbulence.",
+    "preconditions": [
+      "project-underway",
+      "authority-known",
+      "passed-scale-test",
+      "authority-notified"
+    ],
+    "additions": ["turbulence-test"],
+    "deletions": []
+  },
+  {
+    "name": "Insufficient project component fails.",
+    "preconditions": ["turbulence-test", "lacks-component"],
+    "additions": [],
+    "deletions": ["turbulence-test"]
+  },
+  {
+    "name": "Sufficient project component holds.",
+    "preconditions": ["turbulence-test", "critical-component"],
+    "additions": ["passed-turbulence-test"],
+    "deletions": ["turbulence-test"]
+  },
+  {
+    "name": "Project takes on unusual scale.",
+    "preconditions": ["project-underway"],
+    "additions": ["scale-test"],
+    "deletions": []
+  },
+  {
+    "name": "Unconsidered project dimension fails.",
+    "preconditions": ["scale-test", "lacks-dimension"],
+    "additions": [],
+    "deletions": ["scale-test"]
+  },
+  {
+    "name": "Project dimensions stretch to accommodate.",
+    "preconditions": ["scale-test", "critical-dimension"],
+    "additions": ["passed-scale-test"],
+    "deletions": ["scale-test"]
+  },
+  {
+    "name": "Project members complete plan, bound in friendship.",
+    "preconditions": [
+      "project-underway",
+      "dramatis-personae",
+      "passed-turbulence-test",
+      "passed-trial",
+      "passed-scale-test"
+    ],
+    "additions": ["plan-complete"],
+    "deletions": ["project-underway"]
+  },
+  {
+    "name": "Irrational dream is manifest.",
+    "preconditions": ["plan-complete"],
+    "additions": ["dream-manifest"],
+    "deletions": []
+  }
+]

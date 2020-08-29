@@ -1,0 +1,134 @@
+[
+  {
+    "isPrologue": true,
+    "slug": "prologue"
+  },
+  {
+    "isEpilogue": true,
+    "slug": "epilogue"
+  },
+  {
+    "element": "authority-known",
+    "slug": "authority-known"
+  },
+  {
+    "element": "authority-notified",
+    "slug": "authority-notified"
+  },
+  {
+    "element": "character-encountered",
+    "slug": "character-encountered"
+  },
+  {
+    "element": "collaboration",
+    "slug": "collaboration"
+  },
+  {
+    "element": "collaborator-patience",
+    "slug": "collaborator-patience"
+  },
+  {
+    "element": "critical-component",
+    "slug": "critical-component"
+  },
+  {
+    "element": "critical-dimension",
+    "slug": "critical-dimension"
+  },
+  {
+    "element": "dramatis-personae",
+    "slug": "dramatis-personae"
+  },
+  {
+    "element": "dream-manifest",
+    "slug": "dream-manifest"
+  },
+  {
+    "element": "dream",
+    "slug": "dream"
+  },
+  {
+    "element": "dreamer-appears",
+    "slug": "dreamer-appears"
+  },
+  {
+    "element": "friend-has-idea",
+    "slug": "friend-has-idea"
+  },
+  {
+    "element": "friend-member",
+    "slug": "friend-member"
+  },
+  {
+    "element": "immersed",
+    "slug": "immersed"
+  },
+  {
+    "element": "lacks-collaboration",
+    "slug": "lacks-collaboration"
+  },
+  {
+    "element": "lacks-collaboration",
+    "slug": "lacks-collaboration-2"
+  },
+  {
+    "element": "lacks-collaboration",
+    "slug": "lacks-collaboration-3"
+  },
+  {
+    "element": "lacks-component",
+    "slug": "lacks-component"
+  },
+  {
+    "element": "lacks-dimension",
+    "slug": "lacks-dimension"
+  },
+  {
+    "element": "lacks-patience",
+    "slug": "lacks-patience"
+  },
+  {
+    "element": "passed-scale-test",
+    "slug": "passed-scale-test"
+  },
+  {
+    "element": "passed-trial",
+    "slug": "passed-trial"
+  },
+  {
+    "element": "passed-turbulence-test",
+    "slug": "passed-turbulence-test"
+  },
+  {
+    "element": "plan-complete",
+    "slug": "plan-complete"
+  },
+  {
+    "element": "project-member",
+    "slug": "project-member"
+  },
+  {
+    "element": "project-underway",
+    "slug": "project-underway"
+  },
+  {
+    "element": "scale-test",
+    "slug": "scale-test"
+  },
+  {
+    "element": "stranger-has-idea",
+    "slug": "stranger-has-idea"
+  },
+  {
+    "element": "stranger-member",
+    "slug": "stranger-member"
+  },
+  {
+    "element": "trial",
+    "slug": "trial"
+  },
+  {
+    "element": "turbulence-test",
+    "slug": "turbulence-test"
+  }
+]
