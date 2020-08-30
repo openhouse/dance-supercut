@@ -1,0 +1,50 @@
+.white-text text {
+  fill: #ffffff;
+  // stroke: #ffffff;
+}
+
+svg {
+  border: 1px solid #ccc;
+  overflow: hidden;
+  margin: 0 auto;
+  background: white;
+}
+
+text {
+  font-weight: 500;
+  // font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+  font-family: Courier, 'Courier New', monospace;
+  font-size: 14px;
+}
+
+.node rect {
+  stroke: #333;
+  fill: #fff;
+  stroke-width: 1.5px;
+}
+
+.edgePath path {
+  stroke: #333;
+  stroke-width: 1.5px;
+}
+
+table {
+  border-spacing: 0;
+}
+
+table td {
+  padding: 7px;
+}
+
+.svg-element {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  border: 0;
+  background-color: #080d0a;
+}

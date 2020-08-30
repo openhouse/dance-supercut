@@ -31,29 +31,14 @@ const { log } = console;
 export default Service.extend({
   store: service(),
 
+  currentPlan: null,
+
   // all operators from the store
   operators: computed(function () {
     let store = this.get('store');
     return store.peekAll('operator');
   }),
-
-  /*
-  keep a stack of all operators
-  most used operators last
-  otherwise sort by initial position
-  */
-  operatorsStackSorting: Object.freeze(['useCount', 'position']),
-  operatorsStack: sort('operators', 'operatorsStackSorting'),
-
-  shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * i);
-      const temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
-    return array;
-  },
+  operatorsUsed: null,
 
   //
   // plan(array,array): [boolean,array,array]
@@ -97,7 +82,6 @@ export default Service.extend({
       ) {
         nextPlanItem.newAdditions.push(proposition);
       }
-      log(nextPlanItem);
       log('   ' + proposition.get('id'));
     });
 
@@ -125,6 +109,7 @@ export default Service.extend({
       });
     }
 
+    this.set('currentPlan', currentPlan);
     return [success, nextState, currentPlan];
   },
 
@@ -139,8 +124,8 @@ export default Service.extend({
   // returns the current state and plan if all fail.
   //
   achieveGoal(goal, currentState, currentPlan) {
-    var nextState = [...currentState]; // clone currentState
-    var nextPlan = [...currentPlan]; // clone currentPlan
+    let nextState = [...currentState]; // clone currentState
+    let nextPlan = [...currentPlan]; // clone currentPlan
 
     if (
       nextState
@@ -177,9 +162,14 @@ export default Service.extend({
   //
   selectOperators(goal) {
     let selections = [];
-    let sortedOperators = this.get('operatorsStack');
+    let sortedOperators = this.get('operators');
+    let usedSelections = [];
+    let unusedSelections = [];
+    let operatorsUsed = this.get('operatorsUsed');
+    if (operatorsUsed === null) {
+      operatorsUsed = [];
+    }
 
-    sortedOperators = this.shuffleArray(sortedOperators);
     sortedOperators.forEach((operator) => {
       if (
         operator
@@ -190,10 +180,17 @@ export default Service.extend({
         selections.push(operator);
       }
     });
-    log('selections.length', selections.length, selections);
-
     // Any operators that have been used before are
-    // already at end of the sorted list.
+    // moved to the end of the list.
+    selections.forEach((operator) => {
+      if (operatorsUsed.includes(operator.get('name'))) {
+        usedSelections.push(operator);
+      } else {
+        unusedSelections.push(operator);
+      }
+    });
+
+    selections = unusedSelections.concat(usedSelections);
     return selections;
   },
 
@@ -270,6 +267,13 @@ export default Service.extend({
 
       // increment operator.useCount
       operator.set('useCount', operator.get('useCount') + 1);
+
+      let operatorsUsed = this.get('operatorsUsed');
+      if (operatorsUsed === null) {
+        operatorsUsed = [];
+      }
+      operatorsUsed.push(operator.get('name'));
+      this.set('operatorsUsed', operatorsUsed);
 
       return [true, nextState, nextPlan];
     } else {

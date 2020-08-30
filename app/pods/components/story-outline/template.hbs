@@ -1,11 +1,15 @@
 <button {{action "getOutline"}}>Make Outline</button>
-{{#each plan as |step|}}
+<h1>Beginning</h1>
+{{#each planner.currentPlan as |step|}}
   <dl>
     <dt>{{step.operator.name}}</dt>
+    <dd>
     {{#each step.newAdditions as |proposition|}}
-      <dd>{{proposition.slug}}</dd>
+      <ul><li>{{proposition.slug}}</li></ul>
     {{/each}}
+    </dd>
   </dl>
 {{/each}}
+<h1>Ending</h1>
 
 {{yield}}

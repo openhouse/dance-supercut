@@ -44,7 +44,12 @@
   {
     "name": "Project members form project collaboration.",
     "preconditions": ["project-member", "lacks-collaboration"],
-    "additions": ["collaborator-patience", "lacks-component", "lacks-dimension", "collaboration"],
+    "additions": [
+      "collaborator-patience",
+      "lacks-component",
+      "lacks-dimension",
+      "collaboration"
+    ],
     "deletions": ["lacks-collaboration", "lacks-patience"]
   },
   {
@@ -134,7 +139,11 @@
   {
     "name": "Character encounters project, recognizes dramatis personae, joins as project member.",
     "preconditions": ["project-underway", "dramatis-personae"],
-    "additions": ["character-encountered", "stranger-member", "lacks-collaboration"],
+    "additions": [
+      "character-encountered",
+      "stranger-member",
+      "lacks-collaboration"
+    ],
     "deletions": []
   },
   {
@@ -151,7 +160,11 @@
   },
   {
     "name": "Character encounters project, observes insufficient project component, notifies authority.",
-    "preconditions": ["project-underway", "critical-dimension", "lacks-component"],
+    "preconditions": [
+      "project-underway",
+      "critical-dimension",
+      "lacks-component"
+    ],
     "additions": ["character-encountered", "authority-notified"],
     "deletions": []
   },
@@ -163,7 +176,11 @@
   },
   {
     "name": "Authority inspects project.",
-    "preconditions": ["project-underway", "authority-known", "authority-notified"],
+    "preconditions": [
+      "project-underway",
+      "authority-known",
+      "authority-notified"
+    ],
     "additions": ["trial"],
     "deletions": []
   },

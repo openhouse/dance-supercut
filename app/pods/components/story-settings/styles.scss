@@ -1,0 +1,21 @@
+& {
+  color: map-get($oil-pastels, 'white');
+}
+/* ELEMENTS */
+select {
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  margin: 0.25rem 0;
+  padding: 0.25rem;
+  font-family: Courier, 'Courier New', monospace;
+}
+
+/* COMPONENTS */
+
+.state-wrapper {
+  display: flex;
+  padding-bottom: 0.38rem;
+  label {
+    padding-left: 0.38rem;
+  }
+}

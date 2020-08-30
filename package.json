@@ -45,6 +45,7 @@
     "ember-fetch": "^6.7.2",
     "ember-load-initializers": "^2.1.0",
     "ember-maybe-import-regenerator": "^0.1.6",
+    "ember-oil-pastels": "git+https://github.com/openhouse/ember-oil-pastels.git#fb5c5ecfffe6b391d3bd49afd3423263009f5ebb",
     "ember-qunit": "^4.5.1",
     "ember-resolver": "^5.3.0",
     "ember-source": "~3.14.1",

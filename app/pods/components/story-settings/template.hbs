@@ -1,0 +1,31 @@
+<div class="m-8">
+  <h1>
+    Options
+  </h1>
+  <p>
+    Goal<br>
+    <select class="monospace">
+      {{#each additions as |addition|}}
+        <option>{{addition}}</option>
+      {{/each}}
+    </select>
+  </p>
+
+  <p>
+    State
+  </p>
+  {{#each preconditions as |option|}}
+    <div class="state-wrapper">
+      <input
+        type="checkbox"
+        id={{option}}
+        name={{option}}
+        value={{option}}
+      >
+      <label>
+        {{option}}
+      </label>
+    </div>
+  {{/each}}
+  {{yield}}
+</div>
