@@ -1,16 +1,20 @@
 import Component from '@ember/component';
+import { inject as service } from '@ember/service';
+import { isPresent } from '@ember/utils';
 import * as d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 import chunk from 'chunk-text';
-import { isPresent } from '@ember/utils';
 const { log } = console;
 
 export default Component.extend({
+  planner: service(),
+
   splitLines: function (text) {
     return chunk(text, 22).join('\n');
   },
   svg: null,
   graph: null,
+
   drawGraph(self) {
     // build nodes and edges
     let svg = d3.select('svg');
@@ -19,15 +23,7 @@ export default Component.extend({
     let height = svg.node().getBoundingClientRect().height - top;
 
     const colors = {
-      green: '#79c039',
-      yellow: '#ffce50',
-      orange: '#ffb101',
-      red: '#d04667',
-      purple: '#977db5',
-      blue: '#1098d9',
-      sky: '#5dd2fd',
-      lime: '#bdeacb',
-      pink: '#fe3d89',
+      white: '#eeefec',
       black: '#343435',
     };
 
@@ -58,20 +54,77 @@ export default Component.extend({
     });
 
     // load operators
-    let operators = self.get('operators');
+    let allPlans = self.get('planner.allPlans');
+    log(allPlans);
+    let allNewAdditionIds = [];
+    let allPlansOperators = [];
+
+    allPlans.forEach((plan) =>
+      plan.forEach((step) =>
+        step.newAdditions.forEach((proposition) => {
+          let id = proposition.get('id');
+          log(id);
+          allNewAdditionIds.push(id);
+        })
+      )
+    );
+    allPlans.forEach((plan) =>
+      plan.forEach((step) => {
+        if (isPresent(step.operator)) {
+          allPlansOperators.push(step.operator);
+        }
+      })
+    );
+    log(allPlansOperators);
+    /*
+    allPlans.forEach((plan) => {
+      plan.forEach();
+      if (isPresent(plan.get('newAdditions'))) {
+        plan.get('newAdditions').forEach((proposition) => {
+          log(proposition);
+        });
+      }
+    });*/
+    log('allNewAdditionIds', allNewAdditionIds);
+
     let nodes = [];
     let edges = [];
-    operators.forEach((operator) => {
-      g.setNode(operator.id, {
-        label: this.splitLines(operator.name),
+    allPlans.forEach((plan) =>
+      plan.forEach((step, stepIndex) => {
+        if (isPresent(step.operator)) {
+          let operator = step.operator;
+          // add operator and edges to next operator
+          g.setNode(operator.get('id'), {
+            label: this.splitLines(operator.get('name')),
+            labelStyle: 'font-size: 1em; fill: #a7a8a6;',
+            style: `fill: ${colors.black}; stroke: ${colors.black}`,
+          });
+          if (stepIndex < plan.length - 1) {
+            let nextOperator = plan[stepIndex + 1].operator;
+            log(nextOperator);
+            g.setEdge(operator.get('id'), nextOperator.get('id'), {
+              weight: 1,
+              curve: d3.curveBasis,
+              style: 'stroke: #7b7b7b; fill: transparent;',
+              arrowheadStyle: 'stroke: transparent; fill: #7b7b7b;',
+            });
+          }
+        }
+      })
+    );
+
+    /*
+    allPlansOperators.forEach((operator) => {
+      g.setNode(operator.get('id'), {
+        label: this.splitLines(operator.get('name')),
         labelStyle: 'font-size: 1em; fill: #a7a8a6;',
-        style: 'fill: #080d0a; stroke: #080d0a;',
+        style: `fill: ${colors.black}; stroke: ${colors.black}`,
       });
       operator.preconditions.forEach((proposition) => {
         g.setNode(proposition.id, {
           label: this.splitLines(proposition.slug),
           labelStyle: 'font-size: 1em; fill: #a7a8a6;',
-          style: 'fill: #080d0a; stroke: #080d0a;',
+          style: `fill: ${colors.black}; stroke: ${colors.black}`,
         });
         g.setEdge(proposition.id, operator.id, {
           weight: 1,
@@ -84,7 +137,7 @@ export default Component.extend({
         g.setNode(proposition.id, {
           label: this.splitLines(proposition.slug),
           labelStyle: 'font-size: 1em; fill: #a7a8a6;',
-          style: 'fill: #080d0a; stroke: #080d0a;',
+          style: `fill: ${colors.black}; stroke: ${colors.black}`,
         });
         g.setEdge(operator.id, proposition.id, {
           weight: 1,
@@ -94,7 +147,7 @@ export default Component.extend({
         });
       });
     });
-
+    */
     // Set some general styles
     g.nodes().forEach(function (v) {
       var node = g.node(v);

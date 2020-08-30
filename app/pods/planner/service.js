@@ -24,12 +24,79 @@ import Service from '@ember/service';
 import store from '@ember-data/store';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
-import { sort } from '@ember/object/computed';
+import { isPresent } from '@ember/utils';
+import { A } from '@ember/array';
 
 const { log } = console;
 
 export default Service.extend({
   store: service(),
+  defaultGoalIds: 'dream-manifest',
+  defaultStateIds: 'dreamer-appears',
+  customGoalIds: null,
+  customStateIds: null,
+
+  init() {
+    this._super(...arguments);
+    // set default goal and state
+    this.set('defaultGoalIds', A(['dream-manifest']));
+    this.set('defaultStateIds', A(['dreamer-appears']));
+  },
+
+  resetPlanner() {
+    this.set('operatorsUsed', []);
+  },
+
+  // generate array of all possible plans
+  allPlansCache: null,
+  // cache settings for all plans
+  allPlansGoalIds: null,
+  allPlansStateIds: null,
+
+  makeAllPlans(customGoalIds, customStateIds) {
+    // allow override of defaults
+    let goalIds = this.get('defaultGoalIds');
+    let stateIds = this.get('defaultStateIds');
+    if (isPresent(customGoalIds)) {
+      goalIds = customGoalIds;
+    }
+    if (isPresent(customStateIds)) {
+      stateIds = customStateIds;
+    }
+    // initialize
+    this.resetPlanner();
+    let allPlans = [];
+    let allPlanIds = [];
+
+    let running = true;
+    while (running) {
+      running = false;
+      let [success, endState, plan] = this.plan(goalIds, stateIds);
+      let planOperatorIds = plan.map((item) => {
+        if (isPresent(item.operator) && isPresent(item.operator.get('id'))) {
+          return item.operator.get('id');
+        }
+      });
+      let planId = planOperatorIds.join('-');
+      if (success && !allPlanIds.includes(planId)) {
+        allPlans.push(plan);
+        allPlanIds.push(planId);
+        running = true;
+      }
+    }
+    return allPlans;
+  },
+
+  get allPlans() {
+    let allPlansCache = this.get('allPlansCache');
+    if (isPresent(allPlansCache)) {
+      return allPlansCache;
+    }
+    let allPlans = this.makeAllPlans();
+    this.set('allPlansCache', allPlans);
+    log(allPlans);
+    return allPlans;
+  },
 
   currentPlan: null,
 
