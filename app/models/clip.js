@@ -6,10 +6,11 @@ export default Model.extend({
   // ATTRIBUTES
   isPrologue: attr(),
   slug: attr(),
-  plays: attr(),
+  position: attr('number', { defaultValue: 0 }),
+  playCount: attr('number', { defaultValue: 0 }),
 
   // RELATIONSHIPS
-  signified: belongsTo('signified'),
+  proposition: belongsTo('proposition'),
 
   // COMPUTED PROPERTIES
 

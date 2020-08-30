@@ -8,127 +8,127 @@
     "slug": "epilogue"
   },
   {
-    "signified": "authority-known",
+    "proposition": "authority-known",
     "slug": "authority-known"
   },
   {
-    "signified": "authority-notified",
+    "proposition": "authority-notified",
     "slug": "authority-notified"
   },
   {
-    "signified": "character-encountered",
+    "proposition": "character-encountered",
     "slug": "character-encountered"
   },
   {
-    "signified": "collaboration",
+    "proposition": "collaboration",
     "slug": "collaboration"
   },
   {
-    "signified": "collaborator-patience",
+    "proposition": "collaborator-patience",
     "slug": "collaborator-patience"
   },
   {
-    "signified": "critical-component",
+    "proposition": "critical-component",
     "slug": "critical-component"
   },
   {
-    "signified": "critical-dimension",
+    "proposition": "critical-dimension",
     "slug": "critical-dimension"
   },
   {
-    "signified": "dramatis-personae",
+    "proposition": "dramatis-personae",
     "slug": "dramatis-personae"
   },
   {
-    "signified": "dream-manifest",
+    "proposition": "dream-manifest",
     "slug": "dream-manifest"
   },
   {
-    "signified": "dream",
+    "proposition": "dream",
     "slug": "dream"
   },
   {
-    "signified": "dreamer-appears",
+    "proposition": "dreamer-appears",
     "slug": "dreamer-appears"
   },
   {
-    "signified": "friend-has-idea",
+    "proposition": "friend-has-idea",
     "slug": "friend-has-idea"
   },
   {
-    "signified": "friend-member",
+    "proposition": "friend-member",
     "slug": "friend-member"
   },
   {
-    "signified": "immersed",
+    "proposition": "immersed",
     "slug": "immersed"
   },
   {
-    "signified": "lacks-collaboration",
+    "proposition": "lacks-collaboration",
     "slug": "lacks-collaboration"
   },
   {
-    "signified": "lacks-collaboration",
+    "proposition": "lacks-collaboration",
     "slug": "lacks-collaboration-2"
   },
   {
-    "signified": "lacks-collaboration",
+    "proposition": "lacks-collaboration",
     "slug": "lacks-collaboration-3"
   },
   {
-    "signified": "lacks-component",
+    "proposition": "lacks-component",
     "slug": "lacks-component"
   },
   {
-    "signified": "lacks-dimension",
+    "proposition": "lacks-dimension",
     "slug": "lacks-dimension"
   },
   {
-    "signified": "lacks-patience",
+    "proposition": "lacks-patience",
     "slug": "lacks-patience"
   },
   {
-    "signified": "passed-scale-test",
+    "proposition": "passed-scale-test",
     "slug": "passed-scale-test"
   },
   {
-    "signified": "passed-trial",
+    "proposition": "passed-trial",
     "slug": "passed-trial"
   },
   {
-    "signified": "passed-turbulence-test",
+    "proposition": "passed-turbulence-test",
     "slug": "passed-turbulence-test"
   },
   {
-    "signified": "plan-complete",
+    "proposition": "plan-complete",
     "slug": "plan-complete"
   },
   {
-    "signified": "project-member",
+    "proposition": "project-member",
     "slug": "project-member"
   },
   {
-    "signified": "project-underway",
+    "proposition": "project-underway",
     "slug": "project-underway"
   },
   {
-    "signified": "scale-test",
+    "proposition": "scale-test",
     "slug": "scale-test"
   },
   {
-    "signified": "stranger-has-idea",
+    "proposition": "stranger-has-idea",
     "slug": "stranger-has-idea"
   },
   {
-    "signified": "stranger-member",
+    "proposition": "stranger-member",
     "slug": "stranger-member"
   },
   {
-    "signified": "trial",
+    "proposition": "trial",
     "slug": "trial"
   },
   {
-    "signified": "turbulence-test",
+    "proposition": "turbulence-test",
     "slug": "turbulence-test"
   }
 ]

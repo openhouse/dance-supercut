@@ -3,9 +3,11 @@ import Model, { attr, hasMany } from '@ember-data/model';
 export default Model.extend({
   // ATTRIBUTES
   name: attr(),
+  position: attr('number', { defaultValue: 0 }),
+  useCount: attr('number', { defaultValue: 0 }),
 
   // RELATIONSHIPS
-  preconditions: hasMany('signified', { inverse: 'asPreconditions' }),
-  additions: hasMany('signified', { inverse: 'asAdditions' }),
-  deletions: hasMany('signified', { inverse: 'asDeletions' }),
+  preconditions: hasMany('proposition', { inverse: 'asPreconditions' }),
+  additions: hasMany('proposition', { inverse: 'asAdditions' }),
+  deletions: hasMany('proposition', { inverse: 'asDeletions' }),
 });

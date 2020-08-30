@@ -10,9 +10,9 @@ export default Route.extend({
   store: service(),
   /*
     Fetch operators and clips
-    Infer signifieds
+    Infer propositions
     Add to store
-    Return operators, signifieds, clips as ember data
+    Return operators, propositions, clips as ember data
   */
   model() {
     let store = this.get('store');
@@ -21,26 +21,25 @@ export default Route.extend({
       clips: fetch('/clips.json'),
     };
     return hash(promises).then(function (results) {
-      log(results);
-
-      // collect signifieds referenced in results
-      let signifieds = [];
-      let addsignified = (signified) => {
-        if (!signifieds.includes(signified)) {
-          signifieds.push(signified);
+      // collect propositions referenced in results
+      let propositions = [];
+      let addproposition = (proposition) => {
+        if (!propositions.includes(proposition)) {
+          propositions.push(proposition);
         }
       };
 
       // collect data as JSONapi objects
       let data = [];
 
-      // operators have signifieds as preconditions, additions, deletions
-      results.operators.forEach((operator) => {
+      // operators have propositions as preconditions, additions, deletions
+      results.operators.forEach((operator, position) => {
         let item = {
           type: 'operator',
           id: operator.name,
           attributes: {
             name: operator.name,
+            position: position,
             /*
             // use relationships instead of attributes
             preconditions: operator.preconditions,
@@ -60,74 +59,74 @@ export default Route.extend({
             },
           },
         };
-        operator.preconditions.forEach((signified) => {
+        operator.preconditions.forEach((proposition) => {
           item.relationships.preconditions.data.push({
-            type: 'signified',
-            id: signified,
+            type: 'proposition',
+            id: proposition,
           });
-          addsignified(signified);
+          addproposition(proposition);
         });
-        operator.additions.forEach((signified) => {
+        operator.additions.forEach((proposition) => {
           item.relationships.additions.data.push({
-            type: 'signified',
-            id: signified,
+            type: 'proposition',
+            id: proposition,
           });
-          addsignified(signified);
+          addproposition(proposition);
         });
-        operator.deletions.forEach((signified) => {
+        operator.deletions.forEach((proposition) => {
           item.relationships.deletions.data.push({
-            type: 'signified',
-            id: signified,
+            type: 'proposition',
+            id: proposition,
           });
-          addsignified(signified);
+          addproposition(proposition);
         });
 
         data.push(item);
       });
 
-      // clips belong to signifieds
-      results.clips.forEach((clip) => {
+      // clips belong to propositions
+      results.clips.forEach((clip, position) => {
         let item = {
           type: 'clip',
           id: clip.slug,
           attributes: {
             slug: clip.slug,
+            position: position,
           },
         };
-        if (isPresent(clip.signified)) {
+        if (isPresent(clip.proposition)) {
           item.relationships = {
-            signified: {
+            proposition: {
               data: {
-                type: 'signified',
-                id: clip.signified,
+                type: 'proposition',
+                id: clip.proposition,
               },
             },
           };
-          addsignified(clip.signified);
+          addproposition(clip.proposition);
         }
         data.push(item);
       });
 
-      // add signifieds
-      signifieds.forEach((signified) => {
+      // add propositions
+      propositions.forEach((proposition) => {
         let item = {
-          type: 'signified',
-          id: signified,
+          type: 'proposition',
+          id: proposition,
           attributes: {
-            slug: signified,
+            slug: proposition,
           },
         };
         data.push(item);
       });
 
-      log(data);
-
+      // push to ember data store
       store.push({
         data: data,
       });
       return {
         operators: store.peekAll('operator'),
-        signifieds: store.peekAll('signified'),
+        propositions: store.peekAll('proposition'),
         clips: store.peekAll('clip'),
       };
     });
