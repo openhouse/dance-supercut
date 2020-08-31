@@ -1,9 +1,5 @@
 <VideoElement
-  src={{currentClip.src}}
-  class="opacity-0"
-  controls
+  controls={{true}}
   @hasElement={{action "hasElement"}}
-  @canplay={{action "canplay"}}
-  @ended={{action "ended"}}
   />
 {{yield}}
