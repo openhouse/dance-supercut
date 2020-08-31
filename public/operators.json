@@ -131,7 +131,7 @@
     "deletions": ["lacks-component"]
   },
   {
-    "name": "Character encounters project, recognizes dramatis personae, lends wise suggestion, add critical project dimension.",
+    "name": "Character encounters project, recognizes dramatis personae, lends wise suggestion, adds critical project dimension.",
     "preconditions": ["project-underway", "dramatis-personae"],
     "additions": ["character-encountered", "critical-dimension"],
     "deletions": ["lacks-dimension"]

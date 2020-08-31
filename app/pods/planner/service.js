@@ -27,8 +27,8 @@ import { computed } from '@ember/object';
 import { isPresent } from '@ember/utils';
 import { A } from '@ember/array';
 
-const { log } = console;
-
+// const { log } = console;
+const log = () => {};
 export default Service.extend({
   store: service(),
   defaultGoalIds: 'dream-manifest',
