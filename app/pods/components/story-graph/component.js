@@ -10,7 +10,7 @@ export default Component.extend({
   planner: service(),
 
   splitLines: function (text) {
-    return chunk(text, 22).join('\n');
+    return chunk(text, Math.ceil(text.length / 2) + 6).join('\n');
   },
   svg: null,
   graph: null,
@@ -23,8 +23,13 @@ export default Component.extend({
     let height = svg.node().getBoundingClientRect().height - top;
 
     const colors = {
+      transparent: 'transparent',
+      darkPink: '#340c1c',
+      hiPink: '#fe3d89',
+      biege: 'biege',
       white: '#eeefec',
       black: '#343435',
+      rgbBlack: 'black',
     };
 
     //create zoom handler
@@ -96,8 +101,8 @@ export default Component.extend({
           // add operator and edges to next operator
           g.setNode(operator.get('id'), {
             label: this.splitLines(operator.get('name')),
-            labelStyle: 'font-size: 1em; fill: #a7a8a6;',
-            style: `fill: ${colors.black}; stroke: ${colors.black}`,
+            labelStyle: `font-size: 1rem; fill: ${colors.white}`,
+            style: `fill: ${colors.transparent}; stroke: ${colors.transparent}`,
           });
           if (stepIndex < plan.length - 1) {
             let nextOperator = plan[stepIndex + 1].operator;
@@ -105,8 +110,9 @@ export default Component.extend({
             g.setEdge(operator.get('id'), nextOperator.get('id'), {
               weight: 1,
               curve: d3.curveBasis,
-              style: 'stroke: #7b7b7b; fill: transparent;',
-              arrowheadStyle: 'stroke: transparent; fill: #7b7b7b;',
+              style: `stroke: ${colors.white}; fill: transparent;`,
+              arrowheadStyle: `stroke: transparent; fill: ${colors.white}`,
+              class: 'shadow',
             });
           }
         }

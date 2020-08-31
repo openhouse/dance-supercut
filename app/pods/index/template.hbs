@@ -1,5 +1,4 @@
-{{!--
-<GrammarGraph @operators={{model.operators}}/>
---}}
-
+<StoryGraph as |sg|>
+  <StoryMontage @allPlans={{sg.planner.allPlans}}/>
+</StoryGraph>
 {{outlet}}
