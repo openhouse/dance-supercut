@@ -14,6 +14,15 @@ svg {
   width: 100%;
   z-index: 0;
   background: white;
+
+  // fade-in on active
+  transition: opacity 3s;
+  &.not-active > g {
+    opacity: 0 !important;
+  }
+  &.active > g {
+    opacity: 1 !important;
+  }
 }
 
 text {
@@ -33,8 +42,10 @@ text {
   transition: opacity 3s;
   opacity: 0.38 !important;
 }
-.node.active {
-  opacity: 1;
+
+// graph hasn't started yet
+.not-active .node {
+  opacity: 0 !important;
 }
 
 .edgePath path {

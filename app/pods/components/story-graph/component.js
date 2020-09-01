@@ -7,7 +7,8 @@ import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 import { isPresent } from '@ember/utils';
 import { alias } from '@ember/object/computed';
-import { observer } from '@ember/object';
+import { computed, observer } from '@ember/object';
+import { once, scheduleOnce } from '@ember/runloop';
 import * as d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 import chunk from 'chunk-text';
@@ -23,82 +24,12 @@ export default Component.extend({
   svg: null,
   graph: null,
   zoom: null,
-  className: null,
-
-  setActiveNode(operatorGuid) {
-    this.set('className', `.node.${operatorGuid}`);
-  },
-
-  async centerOperator() {
-    /*
-     Pan and zoom to dispay current operator name
-   */
-    let operatorId = this.get('currentOperator.id');
-
-    let svg = this.get('svg');
-    let inner = svg.select('g');
-    let g = this.get('graph');
-    let node = g._nodes[operatorId];
-    node.elem.setAttribute('class', ['active node']);
-    //create zoom handler
-    let zoom_handler = d3.zoom().on('zoom', zoom_actions);
-
-    //specify what to do when zoom event listener is triggered
-    function zoom_actions() {
-      inner.attr('transform', d3.zoomTransform(svg.node()));
+  svgClassName: computed('currentOperator.name', function () {
+    if (isPresent(this.get('currentOperator.name'))) {
+      return 'active';
     }
-
-    //add zoom behaviour to the svg element
-    zoom_handler(svg);
-    log('node', node);
-
-    let sizes = {
-      svg: {
-        viewport: {
-          // viewport coordinate system
-          width: svg.node().getBoundingClientRect().width,
-          height: svg.node().getBoundingClientRect().height,
-          top: svg.node().getBoundingClientRect().top,
-          bottom: svg.node().getBoundingClientRect().bottom,
-          left: svg.node().getBoundingClientRect().top,
-          right: svg.node().getBoundingClientRect().bottom,
-        },
-        bbox: svg.node().getBBox(), // user coordinate system { x, y, width, height }
-      },
-      node: {
-        x: node.x,
-        y: node.y,
-        bbox: node.elem.getBBox(), // user coordinate system { x, y, width, height }
-      },
-      graph: {
-        width: g.graph().width,
-        height: g.graph().height,
-      },
-    };
-
-    let scaleX = sizes.svg.viewport.width / sizes.node.bbox.width;
-    let scaleY = sizes.svg.viewport.height / sizes.node.bbox.height;
-    let scale = Math.min(scaleX, scaleY) * goldenRatio;
-    // scale = 3;
-    // calculate composed transform
-    let transform = d3.zoomIdentity
-      .scale(scale) // scale svg
-      .translate(-sizes.node.x, -sizes.node.y) // center node at viewport origin
-      .translate(
-        // horizontally center in viewport, vertically center in viewport lower third
-        sizes.svg.viewport.width / 2 / scale,
-        (sizes.svg.viewport.height * (goldenRatio + (1 - goldenRatio) / 2)) /
-          scale
-      );
-
-    // perform animated zoom
-    svg.transition().duration(3000).call(zoom_handler.transform, transform);
-    this.setActiveNode(this.get('currentOperator.guid'));
-  },
-  currentOperatorChanged: observer('currentOperator.id', function () {
-    this.centerOperator();
+    return 'not-active';
   }),
-
   splitLines(text) {
     // add line breaks to nodes
     let twoLines = Math.ceil(text.length / 2) + 4;
@@ -108,9 +39,12 @@ export default Component.extend({
     }
     return chunk(text, twoLines).join('\n');
   },
-
   drawGraph(self) {
+    if (!isPresent(self)) {
+      self = this;
+    }
     // Create a new directed graph
+    log('drawGraph');
 
     // build nodes and edges
     let svg = d3.select('svg');
@@ -179,24 +113,112 @@ export default Component.extend({
     render(inner, g);
 
     svg.selectAll('g.node').on('click', function (e) {
-      console.log(e);
+      log(e);
     });
 
     self.set('svg', svg);
     self.set('graph', g);
-  },
 
-  reframe() {
-    let g = this.get('g');
+    // on redraw, center graph on current operator node
+    if (isPresent(this.get('currentOperator.name'))) {
+      this.centerOperator();
+    } else {
+      let node = g._nodes[Object.keys(g._nodes)[0]];
+      this.zoomToNode(node);
+    }
+  },
+  lastZoom: null,
+
+  zoomToNode(node) {
+    log('zoomToNode', node);
     let svg = this.get('svg');
+    let inner = svg.select('g');
+    let g = this.get('graph');
 
-    let width = svg.node().getBoundingClientRect().width;
-    let top = svg.node().getBoundingClientRect().top;
-    let height = svg.node().getBoundingClientRect().height - top;
+    //specify what to do when zoom event listener is triggered
+    function zoom_actions() {
+      inner.attr('transform', d3.zoomTransform(svg.node()));
+    }
+    if (node.label !== this.get('lastZoom')) {
+      log('runningZoom');
+      this.set('lastZoom', node.label);
+
+      //create zoom handler
+      let zoomHandler = d3.zoom().on('zoom', zoom_actions);
+      zoomHandler(svg);
+
+      //add zoom behaviour to the svg element
+
+      let sizes = {
+        svg: {
+          viewport: {
+            // viewport coordinate system
+            width: svg.node().getBoundingClientRect().width,
+            height: svg.node().getBoundingClientRect().height,
+            top: svg.node().getBoundingClientRect().top,
+            bottom: svg.node().getBoundingClientRect().bottom,
+            left: svg.node().getBoundingClientRect().top,
+            right: svg.node().getBoundingClientRect().bottom,
+          },
+          bbox: svg.node().getBBox(), // user coordinate system { x, y, width, height }
+        },
+        node: {
+          x: node.x,
+          y: node.y,
+          bbox: node.elem.getBBox(), // user coordinate system { x, y, width, height }
+        },
+        graph: {
+          width: g.graph().width,
+          height: g.graph().height,
+        },
+      };
+
+      let scaleX = sizes.svg.viewport.width / sizes.node.bbox.width;
+      let scaleY = sizes.svg.viewport.height / sizes.node.bbox.height;
+      let scale = Math.min(scaleX, scaleY) * goldenRatio;
+      // scale = 3;
+      // calculate composed transform
+      let transform = d3.zoomIdentity
+        .scale(scale) // scale svg
+        .translate(-sizes.node.x, -sizes.node.y) // center node at viewport origin
+        .translate(
+          // horizontally center in viewport, vertically center in viewport lower third
+          sizes.svg.viewport.width / 2 / scale,
+          (sizes.svg.viewport.height * (goldenRatio + (1 - goldenRatio) / 2)) /
+            scale
+        );
+
+      // perform animated zoom
+      svg.transition().duration(3000).call(zoomHandler.transform, transform);
+    }
   },
+
+  // add highlight active node via css
+  // tried with D3, resorted to hack
+  // generates style tag in template
+  className: null,
+  highlightActiveNode(operatorGuid) {
+    this.set('className', `.node.${operatorGuid}`);
+  },
+
+  /*
+   Pan and zoom to dispay current operator name
+  */
+  async centerOperator() {
+    let operatorId = this.get('currentOperator.id');
+    let node = this.get('graph')._nodes[operatorId];
+    this.zoomToNode(node);
+    this.highlightActiveNode(this.get('currentOperator.guid'));
+  },
+  /*
+  currentOperatorChanged: observer('currentOperator.id', function () {
+    this.centerOperator();
+  }),*/
 
   didRender() {
     this._super(...arguments);
-    this.drawGraph(this);
+    log('didRender');
+    // once('this.drawGraph', this, this);
+    this.drawGraph();
   },
 });
