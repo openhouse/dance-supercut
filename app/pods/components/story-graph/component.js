@@ -1,3 +1,8 @@
+/*
+STORY GRAPH
+Graph visualization of all operational plans from initial state to goal
+Advances with montage to focus on operations
+*/
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 import { isPresent } from '@ember/utils';
@@ -64,106 +69,24 @@ export default Component.extend({
         height: g.graph().height,
       },
     };
-    log(sizes);
 
-    let scaleX =
-      (sizes.svg.viewport.width / sizes.node.bbox.width) * goldenRatio;
-    let scale = scaleX;
+    let scaleX = sizes.svg.viewport.width / sizes.node.bbox.width;
+    let scaleY = sizes.svg.viewport.height / sizes.node.bbox.height;
+    let scale = Math.min(scaleX, scaleY) * goldenRatio;
     // scale = 3;
     // calculate composed transform
     let transform = d3.zoomIdentity
-      .scale(scale)
+      .scale(scale) // scale svg
       .translate(-sizes.node.x, -sizes.node.y) // center node at viewport origin
       .translate(
+        // horizontally center in viewport, vertically center in viewport lower third
         sizes.svg.viewport.width / 2 / scale,
         (sizes.svg.viewport.height * (goldenRatio + (1 - goldenRatio) / 2)) /
           scale
       );
 
-    /*
-      .translate(
-        sizes.svg.viewport.width / 2,
-        sizes.svg.viewport.height * (goldenRatio + (1 - goldenRatio) / 2)
-      );
-      */
-    /*
-      .translate(-sizes.svg.bbox.width / 2, -sizes.svg.bbox.height / 2) // center graph at viewport origin
-      .scale(scale)
-      .translate(
-        -(sizes.node.bbox.x + sizes.node.bbox.x + sizes.node.bbox.width) / 2,
-        -(sizes.node.bbox.y + sizes.node.bbox.y + sizes.node.bbox.height) / 2
-      );
-*/
-    /*.translate(
-        sizes.svg.viewport.width / 2,
-        sizes.svg.viewport.height * (goldenRatio + (1 - goldenRatio) / 2)
-      );*/
-    //
-    // .translate(0, sizes.svg.viewport.height * goldenRatio); // node to lower third
-
+    // perform animated zoom
     svg.transition().duration(3000).call(zoom_handler.transform, transform);
-
-    /*
-    let width = ;
-    let top = svg.node().getBoundingClientRect().top;
-      g._nodes[name]
-
-
-    transform = d3.zoomIdentity
-      .translate(w / 2 - scalePoints(d) * scale, (h / 2) * (1 - scale))
-      .scale(scale);
-    svg.transition().duration(300).call(zoomFunc.transform, transform);
-    */
-    /*
-    // Center the graph
-    var initialScale = 0.75;
-    zoom_handler.transform(svg, d3.zoomIdentity);
-
-    let bbox = node.elem.getBBox(); // { x, y, width, height }
-    let width = svg.node().getBoundingClientRect().width;
-    let top = svg.node().getBoundingClientRect().top;
-    let height = svg.node().getBoundingClientRect().height - top;
-
-    let gHeight = g.graph().height;
-    let gWidth = g.graph().width;
-    let nHeight = bbox.height;
-    let nWidth = bbox.width;
-
-    let _height = height - gHeight;
-    let _width = width - gWidth;
-
-    log('height', height);
-    log('gHeight', gHeight);
-    log('nHeight', nHeight);
-    log(
-      'node.elem.childNodes[0].height.baseVal.value',
-      node.elem.childNodes[0].height.baseVal.value
-    );
-    log('g.graph()', g.graph());
-    log('nY', bbox.y);
-    log('node', node);
-    log('node.y', node.y);
-
-    let heightScale = height / gHeight;
-    let widthScale = width / gWidth;
-    let scale = heightScale;
-    if (heightScale > widthScale) {
-      scale = widthScale;
-    }
-
-    _height = height / 2 - node.y;
-    _width = width / 2 - node.x;
-
-    heightScale = height / nHeight;
-    widthScale = width / nWidth;
-    scale = heightScale;
-    if (heightScale > widthScale) {
-      scale = widthScale;
-    }
-    svg
-      .call(zoom_handler.translateBy, _width / 2 - nWidth / 2, _height * 1.62)
-      .call(zoom_handler.scaleBy, scale);
-      */
   },
   currentOperatorChanged: observer('currentOperator.id', function () {
     this.centerOperator();
