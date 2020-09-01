@@ -1,10 +1,12 @@
 [
   {
     "isPrologue": true,
+    "proposition": "prologue",
     "slug": "prologue"
   },
   {
     "isEpilogue": true,
+    "proposition": "epilogue",
     "slug": "epilogue"
   },
   {

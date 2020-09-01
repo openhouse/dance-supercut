@@ -1,15 +1,176 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
 import { isPresent } from '@ember/utils';
+import { alias } from '@ember/object/computed';
+import { observer } from '@ember/object';
 import * as d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 import chunk from 'chunk-text';
 const { log } = console;
+const goldenRatio = 0.618033988749855;
 
 export default Component.extend({
   planner: service(),
+  montage: service(),
+  currentOperator: alias('montage.currentOperator'),
 
-  splitLines: function (text) {
+  // SVG element
+  svg: null,
+  graph: null,
+  zoom: null,
+  // zoom to node to dispay operator name
+  async centerOperator() {
+    log('d3', d3);
+
+    let name = this.get('currentOperator.name');
+
+    let svg = this.get('svg');
+    let inner = svg.select('g');
+    let g = this.get('graph');
+    let node = g._nodes[name];
+
+    //create zoom handler
+    let zoom_handler = d3.zoom().on('zoom', zoom_actions);
+
+    //specify what to do when zoom event listener is triggered
+    function zoom_actions() {
+      inner.attr('transform', d3.zoomTransform(svg.node()));
+    }
+
+    //add zoom behaviour to the svg element
+    zoom_handler(svg);
+    log('node', node);
+
+    let sizes = {
+      svg: {
+        viewport: {
+          // viewport coordinate system
+          width: svg.node().getBoundingClientRect().width,
+          height: svg.node().getBoundingClientRect().height,
+          top: svg.node().getBoundingClientRect().top,
+          bottom: svg.node().getBoundingClientRect().bottom,
+          left: svg.node().getBoundingClientRect().top,
+          right: svg.node().getBoundingClientRect().bottom,
+        },
+        bbox: svg.node().getBBox(), // user coordinate system { x, y, width, height }
+      },
+      node: {
+        x: node.x,
+        y: node.y,
+        bbox: node.elem.getBBox(), // user coordinate system { x, y, width, height }
+      },
+      graph: {
+        width: g.graph().width,
+        height: g.graph().height,
+      },
+    };
+    log(sizes);
+
+    let scaleX =
+      (sizes.svg.viewport.width / sizes.node.bbox.width) * goldenRatio;
+    let scale = scaleX;
+    // scale = 3;
+    // calculate composed transform
+    let transform = d3.zoomIdentity
+      .scale(scale)
+      .translate(-sizes.node.x, -sizes.node.y) // center node at viewport origin
+      .translate(
+        sizes.svg.viewport.width / 2 / scale,
+        (sizes.svg.viewport.height * (goldenRatio + (1 - goldenRatio) / 2)) /
+          scale
+      );
+
+    /*
+      .translate(
+        sizes.svg.viewport.width / 2,
+        sizes.svg.viewport.height * (goldenRatio + (1 - goldenRatio) / 2)
+      );
+      */
+    /*
+      .translate(-sizes.svg.bbox.width / 2, -sizes.svg.bbox.height / 2) // center graph at viewport origin
+      .scale(scale)
+      .translate(
+        -(sizes.node.bbox.x + sizes.node.bbox.x + sizes.node.bbox.width) / 2,
+        -(sizes.node.bbox.y + sizes.node.bbox.y + sizes.node.bbox.height) / 2
+      );
+*/
+    /*.translate(
+        sizes.svg.viewport.width / 2,
+        sizes.svg.viewport.height * (goldenRatio + (1 - goldenRatio) / 2)
+      );*/
+    //
+    // .translate(0, sizes.svg.viewport.height * goldenRatio); // node to lower third
+
+    svg.transition().duration(3000).call(zoom_handler.transform, transform);
+
+    /*
+    let width = ;
+    let top = svg.node().getBoundingClientRect().top;
+      g._nodes[name]
+
+
+    transform = d3.zoomIdentity
+      .translate(w / 2 - scalePoints(d) * scale, (h / 2) * (1 - scale))
+      .scale(scale);
+    svg.transition().duration(300).call(zoomFunc.transform, transform);
+    */
+    /*
+    // Center the graph
+    var initialScale = 0.75;
+    zoom_handler.transform(svg, d3.zoomIdentity);
+
+    let bbox = node.elem.getBBox(); // { x, y, width, height }
+    let width = svg.node().getBoundingClientRect().width;
+    let top = svg.node().getBoundingClientRect().top;
+    let height = svg.node().getBoundingClientRect().height - top;
+
+    let gHeight = g.graph().height;
+    let gWidth = g.graph().width;
+    let nHeight = bbox.height;
+    let nWidth = bbox.width;
+
+    let _height = height - gHeight;
+    let _width = width - gWidth;
+
+    log('height', height);
+    log('gHeight', gHeight);
+    log('nHeight', nHeight);
+    log(
+      'node.elem.childNodes[0].height.baseVal.value',
+      node.elem.childNodes[0].height.baseVal.value
+    );
+    log('g.graph()', g.graph());
+    log('nY', bbox.y);
+    log('node', node);
+    log('node.y', node.y);
+
+    let heightScale = height / gHeight;
+    let widthScale = width / gWidth;
+    let scale = heightScale;
+    if (heightScale > widthScale) {
+      scale = widthScale;
+    }
+
+    _height = height / 2 - node.y;
+    _width = width / 2 - node.x;
+
+    heightScale = height / nHeight;
+    widthScale = width / nWidth;
+    scale = heightScale;
+    if (heightScale > widthScale) {
+      scale = widthScale;
+    }
+    svg
+      .call(zoom_handler.translateBy, _width / 2 - nWidth / 2, _height * 1.62)
+      .call(zoom_handler.scaleBy, scale);
+      */
+  },
+  currentOperatorChanged: observer('currentOperator.id', function () {
+    this.centerOperator();
+  }),
+
+  splitLines(text) {
+    // add line breaks to nodes
     let twoLines = Math.ceil(text.length / 2) + 4;
     let threeLines = Math.ceil(text.length / 3) + 4;
     if (twoLines > 40) {
@@ -17,10 +178,10 @@ export default Component.extend({
     }
     return chunk(text, twoLines).join('\n');
   },
-  svg: null,
-  graph: null,
 
   drawGraph(self) {
+    // Create a new directed graph
+
     // build nodes and edges
     let svg = d3.select('svg');
     let width = svg.node().getBoundingClientRect().width;
@@ -37,8 +198,9 @@ export default Component.extend({
       rgbBlack: 'black',
     };
 
+    /*
     //create zoom handler
-    var zoom_handler = d3.zoom().on('zoom', zoom_actions);
+    let zoom_handler = d3.zoom().on('zoom', zoom_actions);
 
     //specify what to do when zoom event listener is triggered
     function zoom_actions() {
@@ -47,16 +209,14 @@ export default Component.extend({
 
     //add zoom behaviour to the svg element
     zoom_handler(svg);
+    */
 
     const inner = svg.select('g');
 
-    //  tcp-state-diagram EXAMPLE
-    //
-    // Create a new directed graph
+    // create the graph
     // var g = new dagreD3.graphlib.Graph().setGraph({ ranker: 'network-simplex' });
-
     // var g = new dagreD3.graphlib.Graph().setGraph({ ranker: 'longest-path' });
-    var g = new dagreD3.graphlib.Graph().setGraph({
+    let g = new dagreD3.graphlib.Graph().setGraph({
       ranker: 'tight-tree',
       rankdir: 'tb', //rl bt tb
       nodesep: 38,
@@ -101,6 +261,7 @@ export default Component.extend({
     // Run the renderer. This is what draws the final graph.
     render(inner, g);
 
+    /*
     // Center the graph
     var initialScale = 0.75;
     zoom_handler.transform(svg, d3.zoomIdentity);
@@ -123,13 +284,14 @@ export default Component.extend({
       // .call(zoom_handler.scaleBy, scale * 0.618033988749855);
       // .call(zoom_handler.scaleBy, scale * 0.7639320225);
       .call(zoom_handler.scaleBy, scale * 0.854101966249722);
-
+    */
     svg.selectAll('g.node').on('click', function (e) {
       console.log(e);
     });
 
     self.set('svg', svg);
     self.set('graph', g);
+    // self.set('zoom', zoom_handler);
   },
 
   reframe() {

@@ -28,6 +28,13 @@ text {
   fill: #fff;
   stroke-width: 1.5px;
 }
+.node,
+.edgePath {
+  opacity: 0.38 !important;
+}
+.node.active {
+  opacity: 1 !important;
+}
 
 .edgePath path {
   stroke: #333;

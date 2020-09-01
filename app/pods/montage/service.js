@@ -14,7 +14,7 @@ export default Service.extend({
   playing: false,
   init() {
     this._super(...arguments);
-    this.set('planIndex', 0);
+    this.set('planIndex', 3);
     this.set('playing', false);
   },
   currentPlan: computed('allPlans', 'planIndex', function () {
@@ -73,6 +73,7 @@ export default Service.extend({
             vid.src = clip.get('src');
             vid.currentTime = 0;
             vid.play();
+            vid.volume = 1;
             // wait while clip plays
             await this.clipEnded();
 
