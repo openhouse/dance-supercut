@@ -5,6 +5,7 @@
   bottom: calc((-6rem + 100vh) * 0.38);
   left: 19vw;
   right: 19vw;
+  background: radial-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0));
 }
 /* ELEMENTS */
 video {
@@ -18,6 +19,7 @@ video {
   &:focus {
     outline: none;
   }
-  opacity: 1;
+  // opacity: 1;
   opacity: 0.62;
+  // opacity: 0.85;
 }

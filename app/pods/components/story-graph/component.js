@@ -23,17 +23,23 @@ export default Component.extend({
   svg: null,
   graph: null,
   zoom: null,
-  // zoom to node to dispay operator name
-  async centerOperator() {
-    log('d3', d3);
+  className: null,
 
-    let name = this.get('currentOperator.name');
+  setActiveNode(operatorGuid) {
+    this.set('className', `.node.${operatorGuid}`);
+  },
+
+  async centerOperator() {
+    /*
+     Pan and zoom to dispay current operator name
+   */
+    let operatorId = this.get('currentOperator.id');
 
     let svg = this.get('svg');
     let inner = svg.select('g');
     let g = this.get('graph');
-    let node = g._nodes[name];
-
+    let node = g._nodes[operatorId];
+    node.elem.setAttribute('class', ['active node']);
     //create zoom handler
     let zoom_handler = d3.zoom().on('zoom', zoom_actions);
 
@@ -87,6 +93,7 @@ export default Component.extend({
 
     // perform animated zoom
     svg.transition().duration(3000).call(zoom_handler.transform, transform);
+    this.setActiveNode(this.get('currentOperator.guid'));
   },
   currentOperatorChanged: observer('currentOperator.id', function () {
     this.centerOperator();
@@ -121,19 +128,6 @@ export default Component.extend({
       rgbBlack: 'black',
     };
 
-    /*
-    //create zoom handler
-    let zoom_handler = d3.zoom().on('zoom', zoom_actions);
-
-    //specify what to do when zoom event listener is triggered
-    function zoom_actions() {
-      inner.attr('transform', d3.zoomTransform(svg.node()));
-    }
-
-    //add zoom behaviour to the svg element
-    zoom_handler(svg);
-    */
-
     const inner = svg.select('g');
 
     // create the graph
@@ -157,6 +151,7 @@ export default Component.extend({
             label: this.splitLines(operator.get('name')),
             labelStyle: `font-size: 1rem; fill: ${colors.white}`,
             style: `fill: ${colors.transparent}; stroke: ${colors.transparent}`,
+            class: operator.get('guid'),
           });
           if (stepIndex < plan.length - 1) {
             let nextOperator = plan[stepIndex + 1].operator;
@@ -165,7 +160,6 @@ export default Component.extend({
               curve: d3.curveBasis,
               style: `stroke: ${colors.white}; fill: transparent;`,
               arrowheadStyle: `stroke: transparent; fill: ${colors.white}`,
-              class: 'shadow',
             });
           }
         }
@@ -184,37 +178,12 @@ export default Component.extend({
     // Run the renderer. This is what draws the final graph.
     render(inner, g);
 
-    /*
-    // Center the graph
-    var initialScale = 0.75;
-    zoom_handler.transform(svg, d3.zoomIdentity);
-
-    let gHeight = g.graph().height;
-    let gWidth = g.graph().width;
-
-    let _height = height - gHeight;
-    let _width = width - gWidth;
-
-    let heightScale = height / gHeight;
-    let widthScale = width / gWidth;
-    let scale = heightScale;
-    if (heightScale > widthScale) {
-      scale = widthScale;
-    }
-
-    svg
-      .call(zoom_handler.translateBy, _width / 2, _height / 2)
-      // .call(zoom_handler.scaleBy, scale * 0.618033988749855);
-      // .call(zoom_handler.scaleBy, scale * 0.7639320225);
-      .call(zoom_handler.scaleBy, scale * 0.854101966249722);
-    */
     svg.selectAll('g.node').on('click', function (e) {
       console.log(e);
     });
 
     self.set('svg', svg);
     self.set('graph', g);
-    // self.set('zoom', zoom_handler);
   },
 
   reframe() {
