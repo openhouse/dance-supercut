@@ -23,3 +23,7 @@ video {
   opacity: 0.62;
   // opacity: 0.85;
 }
+
+video::-webkit-media-controls-fullscreen-button {
+  // display: none !important;
+}
