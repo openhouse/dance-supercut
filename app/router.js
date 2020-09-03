@@ -9,4 +9,5 @@ export default class Router extends EmberRouter {
 Router.map(function() {
   this.route('outline');
   this.route('graph');
+  this.route('images');
 });

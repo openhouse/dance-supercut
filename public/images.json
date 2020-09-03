@@ -1,0 +1,136 @@
+[
+  {
+    "isPrologue": true,
+    "proposition": "prologue",
+    "slug": "prologue"
+  },
+  {
+    "isEpilogue": true,
+    "proposition": "epilogue",
+    "slug": "epilogue"
+  },
+  {
+    "proposition": "authority-known",
+    "slug": "authority-known"
+  },
+  {
+    "proposition": "authority-notified",
+    "slug": "authority-notified"
+  },
+  {
+    "proposition": "character-encountered",
+    "slug": "character-encountered"
+  },
+  {
+    "proposition": "collaboration",
+    "slug": "collaboration"
+  },
+  {
+    "proposition": "collaborator-patience",
+    "slug": "collaborator-patience"
+  },
+  {
+    "proposition": "critical-component",
+    "slug": "critical-component"
+  },
+  {
+    "proposition": "critical-dimension",
+    "slug": "critical-dimension"
+  },
+  {
+    "proposition": "dramatis-personae",
+    "slug": "dramatis-personae"
+  },
+  {
+    "proposition": "dream-manifest",
+    "slug": "dream-manifest"
+  },
+  {
+    "proposition": "dream",
+    "slug": "dream"
+  },
+  {
+    "proposition": "dreamer-appears",
+    "slug": "dreamer-appears"
+  },
+  {
+    "proposition": "friend-has-idea",
+    "slug": "friend-has-idea"
+  },
+  {
+    "proposition": "friend-member",
+    "slug": "friend-member"
+  },
+  {
+    "proposition": "immersed",
+    "slug": "immersed"
+  },
+  {
+    "proposition": "lacks-collaboration",
+    "slug": "lacks-collaboration"
+  },
+  {
+    "proposition": "lacks-collaboration",
+    "slug": "lacks-collaboration-2"
+  },
+  {
+    "proposition": "lacks-collaboration",
+    "slug": "lacks-collaboration-3"
+  },
+  {
+    "proposition": "lacks-component",
+    "slug": "lacks-component"
+  },
+  {
+    "proposition": "lacks-dimension",
+    "slug": "lacks-dimension"
+  },
+  {
+    "proposition": "lacks-patience",
+    "slug": "lacks-patience"
+  },
+  {
+    "proposition": "passed-scale-test",
+    "slug": "passed-scale-test"
+  },
+  {
+    "proposition": "passed-trial",
+    "slug": "passed-trial"
+  },
+  {
+    "proposition": "passed-turbulence-test",
+    "slug": "passed-turbulence-test"
+  },
+  {
+    "proposition": "plan-complete",
+    "slug": "plan-complete"
+  },
+  {
+    "proposition": "project-member",
+    "slug": "project-member"
+  },
+  {
+    "proposition": "project-underway",
+    "slug": "project-underway"
+  },
+  {
+    "proposition": "scale-test",
+    "slug": "scale-test"
+  },
+  {
+    "proposition": "stranger-has-idea",
+    "slug": "stranger-has-idea"
+  },
+  {
+    "proposition": "stranger-member",
+    "slug": "stranger-member"
+  },
+  {
+    "proposition": "trial",
+    "slug": "trial"
+  },
+  {
+    "proposition": "turbulence-test",
+    "slug": "turbulence-test"
+  }
+]
