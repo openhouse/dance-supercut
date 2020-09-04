@@ -19,6 +19,7 @@ export default Route.extend({
     let promises = {
       operators: fetch('/operators.json'),
       clips: fetch('/clips.json'),
+      terms: fetch('/terms.json'),
     };
     return hash(promises).then(function (results) {
       // collect propositions referenced in results
@@ -105,6 +106,19 @@ export default Route.extend({
           };
           addproposition(clip.proposition);
         }
+        data.push(item);
+      });
+
+      // Narrative Function Component Terms
+      results.terms.forEach((term, position) => {
+        let item = {
+          type: 'term',
+          id: term,
+          attributes: {
+            name: term,
+            position: position,
+          },
+        };
         data.push(item);
       });
 

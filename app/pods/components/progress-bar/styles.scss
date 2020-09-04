@@ -1,0 +1,15 @@
+.progress {
+  height: 0.25rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.progress-inner {
+  transition: width 1s;
+  background-color: transparentize(
+    map-get($oil-pastels, 'hi-pink'),
+    1 - $golden-ratio
+  );
+  height: 100%;
+  width: 0%;
+}

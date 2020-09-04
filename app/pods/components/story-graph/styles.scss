@@ -40,7 +40,7 @@ text {
 .node,
 .edgePath {
   transition: opacity 3s;
-  opacity: 0.38 !important;
+  opacity: 1 - $golden-ratio !important;
 }
 
 // graph hasn't started yet
@@ -68,9 +68,9 @@ table td {
   z-index: 1;
   border: 0;
   background-image: linear-gradient(
-      rgba(black, 0.62),
-      rgba(black, 0.38),
-      rgba(black, 0.62),
+      rgba(black, $golden-ratio),
+      rgba(black, 1 - $golden-ratio),
+      rgba(black, $golden-ratio),
       rgba(map-get($oil-pastels, 'hi-blue'), 1)
     ),
     url('http://savenycspaces.nycartc.com/img/testimonials/web/save-nyc-spaces-group-0d813bb10238c14ce775de2f0dc9e940.jpg');

@@ -73,7 +73,7 @@ export default Service.extend({
             vid.src = clip.get('src');
             vid.currentTime = 0;
             vid.play();
-            vid.volume = 1;
+            vid.volume = 0;
             // wait while clip plays
             await this.clipEnded();
 

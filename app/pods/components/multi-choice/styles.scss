@@ -1,0 +1,32 @@
+.frame {
+  transition: top 0.75s, opacity 0.75s;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  top: 100%;
+  opacity: 0;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    1 - $golden-ratio * $golden-ratio * $golden-ratio
+  );
+  box-shadow: $box-shadow;
+  &.active {
+    top: calc(#{$golden-ratio * 100%} + 4rem);
+    opacity: 1;
+  }
+}
+.btn-set {
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 0rem 1rem;
+}
+.active .btn {
+  opacity: 1;
+}

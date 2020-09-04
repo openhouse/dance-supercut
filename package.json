@@ -55,6 +55,7 @@
     "eslint-plugin-ember": "^7.1.0",
     "eslint-plugin-node": "^10.0.0",
     "eslint-plugin-prettier": "^3.1.4",
+    "highlight-words-core": "^1.2.2",
     "loader.js": "^4.7.0",
     "npm-force-resolutions": "0.0.3",
     "prettier": "2.1.1",

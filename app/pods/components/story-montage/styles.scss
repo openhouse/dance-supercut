@@ -11,6 +11,6 @@ video {
   width: 100%;
   height: 100%;
   border-radius: 1rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.38);
+  box-shadow: $box-shadow;
   object-fit: cover;
 }
