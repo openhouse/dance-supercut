@@ -124,7 +124,9 @@ export default Component.extend({
       this.centerOperator();
     } else {
       let node = g._nodes[Object.keys(g._nodes)[0]];
-      this.zoomToNode(node);
+      if (isPresent(node)) {
+        this.zoomToNode(node);
+      }
     }
   },
   lastZoom: null,

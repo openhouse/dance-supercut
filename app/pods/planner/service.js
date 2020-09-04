@@ -21,26 +21,25 @@
   to find a plan to achieve the goals.
 */
 import Service from '@ember/service';
-import store from '@ember-data/store';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import { isPresent } from '@ember/utils';
-import { A } from '@ember/array';
+import { A, isArray } from '@ember/array';
 
-// const { log } = console;
-const log = () => {};
+const { log } = console;
+// const log = () => {};
 export default Service.extend({
   store: service(),
-  defaultGoalIds: 'dream-manifest',
+  defaultGoalId: 'dream-manifest',
   defaultStateIds: 'dreamer-appears',
-  customGoalIds: null,
+  customGoalId: null,
   customStateIds: null,
 
   init() {
     this._super(...arguments);
     // set default goal and state
-    this.set('defaultGoalIds', A(['dream-manifest']));
-    this.set('defaultStateIds', A(['dreamer-appears']));
+    this.set('defaultGoalId', 'dream-manifest');
+    this.set('defaultStateIds', 'dreamer-appears');
   },
 
   resetPlanner() {
@@ -55,14 +54,26 @@ export default Service.extend({
 
   makeAllPlans(customGoalIds, customStateIds) {
     // allow override of defaults
-    let goalIds = this.get('defaultGoalIds');
+    let goalIds = this.get('defaultGoalId');
     let stateIds = this.get('defaultStateIds');
+
+    // override defaults with custom
+    // ensure that plan() recieves arrays as arguments
     if (isPresent(customGoalIds)) {
-      goalIds = customGoalIds;
+      if (isArray(customGoalIds)) {
+        goalIds = customGoalIds;
+      } else {
+        goalIds = A([customGoalIds]);
+      }
     }
     if (isPresent(customStateIds)) {
-      stateIds = customStateIds;
+      if (isArray(customStateIds)) {
+        stateIds = customStateIds;
+      } else {
+        stateIds = A([customStateIds]);
+      }
     }
+
     // initialize
     this.resetPlanner();
     let allPlans = [];
@@ -87,16 +98,25 @@ export default Service.extend({
     return allPlans;
   },
 
-  get allPlans() {
-    let allPlansCache = this.get('allPlansCache');
-    if (isPresent(allPlansCache)) {
-      return allPlansCache;
+  allPlans: computed(
+    'defaultGoalId',
+    'defaultStateIds',
+    'customGoalId',
+    'customStateIds',
+    function () {
+      let customGoalIds = this.get('customGoalId');
+      let customStateIds = this.get('customStateIds');
+      if (isPresent(customGoalIds) && !isArray(customGoalIds)) {
+        customGoalIds = A([customGoalIds]);
+      }
+      if (isPresent(customStateIds) && !isArray(customStateIds)) {
+        customStateIds = A([customStateIds]);
+      }
+
+      let allPlans = this.makeAllPlans(customGoalIds, customStateIds);
+      return allPlans;
     }
-    let allPlans = this.makeAllPlans();
-    this.set('allPlansCache', allPlans);
-    log(allPlans);
-    return allPlans;
-  },
+  ),
 
   currentPlan: null,
 
@@ -116,11 +136,22 @@ export default Service.extend({
   // be achieved; returns false, the currentState, and
   // an invalid plan otherwise.
   plan(goalIds, currentStateIds) {
+    log('plan(goalIds, currentStateIds)', goalIds, currentStateIds);
     let store = this.get('store');
     let goals = [];
     let currentState = [];
 
+    // ensure goal and state are arrays
+    if (isPresent(goalIds) && !isArray(goalIds)) {
+      log('goalIds', goalIds, typeof goalIds);
+      goalIds = A([goalIds]);
+    }
+    if (isPresent(currentStateIds) && !isArray(currentStateIds)) {
+      currentStateIds = A([currentStateIds]);
+    }
+
     goalIds.forEach((goalId) => {
+      log('goalId', goalId);
       goals.push(store.peekRecord('proposition', goalId));
     });
     currentStateIds.forEach((currentStateId) => {
@@ -157,11 +188,15 @@ export default Service.extend({
     currentPlan.push(nextPlanItem);
 
     goals.forEach((goal) => {
-      [success, nextState, currentPlan] = this.achieveGoal(
-        goal,
-        nextState,
-        currentPlan
-      );
+      try {
+        [success, nextState, currentPlan] = this.achieveGoal(
+          goal,
+          nextState,
+          currentPlan
+        );
+      } catch {
+        success = false;
+      }
       if (!success) {
         log('unable to achieve goal ' + goal.get('id'));
       }

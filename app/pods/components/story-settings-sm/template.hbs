@@ -1,0 +1,17 @@
+<select onchange={{action (mut customGoalId) value="target.value"}}>
+  {{defaultGoalId}}
+  {{#each allAdditions as |addition|}}
+    {{#if (eq addition defaultGoalId)}}
+      {{!-- is default goal --}}
+      <option selected={{true}} value={{addition}}>
+        {{addition}}
+      </option>
+    {{else}}
+      {{!-- not default goal --}}
+      <option value={{addition}}>
+        {{addition}}
+      </option>
+    {{/if}}
+  {{/each}}
+</select>
+{{yield}}

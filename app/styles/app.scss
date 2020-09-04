@@ -33,8 +33,9 @@ nav {
 .sans {
   font-family: Arial, Helvetica, Verdana, sans-serif;
 }
+$monospace-font-family: courier, 'Courier New', monospace;
 .monospace {
-  font-family: courier, 'Courier New', monospace;
+  font-family: $monospace-font-family;
 }
 
 /* LAYOUT */

@@ -1,6 +1,6 @@
 import Model, { attr, hasMany } from '@ember-data/model';
 import { computed } from '@ember/object';
-import { alias, equal } from '@ember/object/computed';
+import { equal } from '@ember/object/computed';
 import { guidFor } from '@ember/object/internals';
 import { inject as service } from '@ember/service';
 
