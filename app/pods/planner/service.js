@@ -125,7 +125,7 @@ export default Service.extend({
     let store = this.get('store');
     return store.peekAll('operator');
   }),
-  // operatorsUsed: null,
+  operatorsUsed: null,
 
   //
   // plan(array,array): [boolean,array,array]
@@ -240,8 +240,9 @@ export default Service.extend({
       '%c achieveGoal - START:',
       'background-color: #bada55',
       goal.get('id'),
-      currentState.map((operator) => operator.get('id')),
-      currentPlan
+      currentState.map((proposition) => proposition.get('id')),
+      currentPlan,
+      currentOperatorsUsed
     );
 
     let nextState = [...currentState]; // clone currentState
@@ -332,6 +333,7 @@ export default Service.extend({
     let sortedOperators = this.get('operators');
     let usedSelections = A([]);
     let unusedSelections = A([]);
+
     /*
     let operatorsUsed = this.get('operatorsUsed');
     if (operatorsUsed === null) {
@@ -345,12 +347,10 @@ export default Service.extend({
     stateIds.forEach((stateId) => {
       sortedOperators.forEach((operator) => {
         // additions must add something not already in state
-        let matchAdditions = false;
-
         let additions = operator
           .get('additions')
           .map((proposition) => proposition.get('id'));
-        matchAdditions = !additions.includes(stateId);
+        let matchAdditions = !additions.includes(stateId);
 
         // state must meet preconditions
         let matchPreconditions = true;
@@ -474,7 +474,7 @@ export default Service.extend({
     nextPlan.push(nextPlanItem);
 
     // increment operator.useCount
-    // operator.set('useCount', operator.get('useCount') + 1);
+    operator.set('useCount', operator.get('useCount') + 1);
 
     /*
 
@@ -485,7 +485,6 @@ export default Service.extend({
     */
     nextOperatorsUsed.push(operator.get('name'));
     // this.set('operatorsUsed', operatorsUsed);
-    log('JAMIE');
     [success, nextState, nextPlan, nextOperatorsUsed] = this.achieveGoal(
       goal,
       nextState,
