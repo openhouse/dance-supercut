@@ -325,12 +325,13 @@ export default Service.extend({
     log(
       '%c selectOperators - START:',
       'background-color: #da55ba',
-      goal.get('id')
+      goal.get('id'),
+      nextOperatorsUsed
     );
-    let selections = [];
+    let selections = A([]);
     let sortedOperators = this.get('operators');
-    let usedSelections = [];
-    let unusedSelections = [];
+    let usedSelections = A([]);
+    let unusedSelections = A([]);
     /*
     let operatorsUsed = this.get('operatorsUsed');
     if (operatorsUsed === null) {
@@ -340,27 +341,45 @@ export default Service.extend({
 
     // preconditions are met by state
     let stateIds = nextState.map((proposition) => proposition.get('id'));
-    sortedOperators.forEach((operator) => {
-      // state must meet preconditions
-      let matchPreconditions = true;
-      operator.get('preconditions').forEach((proposition) => {
-        if (!stateIds.includes(proposition.get('id'))) {
-          matchPreconditions = false;
+    stateIds = stateIds.reverse();
+    stateIds.forEach((stateId) => {
+      sortedOperators.forEach((operator) => {
+        // additions must add something not already in state
+        let matchAdditions = false;
+
+        let additions = operator
+          .get('additions')
+          .map((proposition) => proposition.get('id'));
+        matchAdditions = !additions.includes(stateId);
+
+        // state must meet preconditions
+        let matchPreconditions = true;
+        operator.get('preconditions').forEach((proposition) => {
+          if (!stateIds.includes(proposition.get('id'))) {
+            matchPreconditions = false;
+          }
+        });
+
+        if (matchPreconditions) {
+          selections.push(operator);
         }
       });
-
-      // additions must add something not already in state
-      let matchAdditions = false;
-      operator.get('additions').forEach((proposition) => {
-        if (!stateIds.includes(proposition.get('id'))) {
-          matchAdditions = true;
-        }
-      });
-
-      if (matchPreconditions && matchAdditions) {
-        selections.push(operator);
-      }
     });
+
+    // must not already be in state
+    selections = selections.filter((operator) => {
+      let additionIds = operator
+        .get('additions')
+        .map((proposition) => proposition.get('id'));
+      let match = false;
+      additionIds.forEach((additionId) => {
+        if (!stateIds.includes(additionId)) {
+          match = true;
+        }
+      });
+      return match;
+    });
+    selections = selections.uniqBy('name');
     // Any operators that have been used before are
     // moved to the end of the list.
     selections.forEach((operator) => {
@@ -454,9 +473,10 @@ export default Service.extend({
     // plan with attributes
     nextPlan.push(nextPlanItem);
 
-    /*
     // increment operator.useCount
-    operator.set('useCount', operator.get('useCount') + 1);
+    // operator.set('useCount', operator.get('useCount') + 1);
+
+    /*
 
     let operatorsUsed = this.get('operatorsUsed');
     if (operatorsUsed === null) {
