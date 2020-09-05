@@ -136,14 +136,13 @@ export default Service.extend({
   // be achieved; returns false, the currentState, and
   // an invalid plan otherwise.
   plan(goalIds, currentStateIds) {
-    log('plan(goalIds, currentStateIds)', goalIds, currentStateIds);
+    log('plan - START:', goalIds, currentStateIds);
     let store = this.get('store');
     let goals = [];
     let currentState = [];
 
     // ensure goal and state are arrays
     if (isPresent(goalIds) && !isArray(goalIds)) {
-      log('goalIds', goalIds, typeof goalIds);
       goalIds = A([goalIds]);
     }
     if (isPresent(currentStateIds) && !isArray(currentStateIds)) {
@@ -151,7 +150,6 @@ export default Service.extend({
     }
 
     goalIds.forEach((goalId) => {
-      log('goalId', goalId);
       goals.push(store.peekRecord('proposition', goalId));
     });
     currentStateIds.forEach((currentStateId) => {
@@ -212,6 +210,12 @@ export default Service.extend({
     }
 
     this.set('currentPlan', currentPlan);
+    log(
+      'plan - END:',
+      success,
+      nextState.map((proposition) => proposition.get('id')),
+      currentPlan.map((item) => item.operator)
+    );
     return [success, nextState, currentPlan];
   },
 
@@ -226,6 +230,14 @@ export default Service.extend({
   // returns the current state and plan if all fail.
   //
   achieveGoal(goal, currentState, currentPlan) {
+    log(
+      '%c achieveGoal - START:',
+      'background-color: #bada55',
+      goal,
+      currentState.map((operator) => operator.get('id')),
+      currentPlan
+    );
+
     let nextState = [...currentState]; // clone currentState
     let nextPlan = [...currentPlan]; // clone currentPlan
 
@@ -234,6 +246,13 @@ export default Service.extend({
         .map((proposition) => proposition.get('id'))
         .includes(goal.get('id'))
     ) {
+      log(
+        '%c achieveGoal - END:',
+        'background-color: #bada55',
+        true,
+        currentState.map((operator) => operator.get('id')),
+        currentPlan
+      );
       return [true, currentState, currentPlan];
     } else {
       let selections = this.selectOperators(goal);
@@ -250,8 +269,22 @@ export default Service.extend({
       });
 
       if (success) {
+        log(
+          '%c achieveGoal - END:',
+          'background-color: #bada55',
+          true,
+          nextState.map((operator) => operator.get('id')),
+          nextPlan
+        );
         return [true, nextState, nextPlan];
       } else {
+        log(
+          '%c achieveGoal - END:',
+          'background-color: #bada55',
+          false,
+          currentState.map((operator) => operator.get('id')),
+          currentPlan
+        );
         return [false, currentState, currentPlan];
       }
     }
@@ -263,6 +296,11 @@ export default Service.extend({
   // Finds all operators containing the goal in the additions list.
   //
   selectOperators(goal) {
+    log(
+      '%c selectOperators - START:',
+      'background-color: #da55ba',
+      goal.get('id')
+    );
     let selections = [];
     let sortedOperators = this.get('operators');
     let usedSelections = [];
@@ -293,6 +331,11 @@ export default Service.extend({
     });
 
     selections = unusedSelections.concat(usedSelections);
+    log(
+      '%c selectOperators - END:',
+      'background-color: #da55ba',
+      selections.map((proposition) => proposition.get('id'))
+    );
     return selections;
   },
 
@@ -305,6 +348,14 @@ export default Service.extend({
   // [false,state,plan]
   //
   applyOperator(operator, currentState, currentPlan) {
+    log(
+      '%c applyOperator - START:',
+      'background-color: #55bada',
+      operator.get('name'),
+      currentState.map((proposition) => proposition.get('id')),
+      currentPlan
+    );
+
     let nextState = [...currentState];
     let nextPlan = [...currentPlan];
     let success = true;
@@ -323,8 +374,6 @@ export default Service.extend({
     // If the preconditions are solved, execute the operator by
     // deleting its deletions and adding its additions to the state.
     if (success) {
-      log(operator.get('name'));
-
       // plan with attributes
       let nextPlanItem = {
         operator: operator,
@@ -376,9 +425,22 @@ export default Service.extend({
       }
       operatorsUsed.push(operator.get('name'));
       this.set('operatorsUsed', operatorsUsed);
-
+      log(
+        '%c applyOperator - END:',
+        'background-color: #55bada',
+        true,
+        nextState.map((proposition) => proposition.get('id')),
+        nextPlan
+      );
       return [true, nextState, nextPlan];
     } else {
+      log(
+        '%c applyOperator - END:',
+        'background-color: #55bada',
+        false,
+        currentState.map((proposition) => proposition.get('id')),
+        currentPlan
+      );
       return [false, currentState, currentPlan];
     }
   },
