@@ -255,7 +255,7 @@ export default Service.extend({
       );
       return [true, currentState, currentPlan];
     } else {
-      let selections = this.selectOperators(goal);
+      let selections = this.selectOperators(goal, nextState);
       let success = false;
 
       selections.forEach((operator) => {
@@ -295,7 +295,7 @@ export default Service.extend({
   //
   // Finds all operators containing the goal in the additions list.
   //
-  selectOperators(goal) {
+  selectOperators(goal, nextState) {
     log(
       '%c selectOperators - START:',
       'background-color: #da55ba',
@@ -310,13 +310,17 @@ export default Service.extend({
       operatorsUsed = [];
     }
 
+    // preconditions are met by state
+    let stateIds = nextState.map((proposition) => proposition.get('id'));
     sortedOperators.forEach((operator) => {
-      if (
-        operator
-          .get('additions')
-          .map((addition) => addition.get('id'))
-          .includes(goal.get('id'))
-      ) {
+      let match = true;
+      operator.get('preconditions').forEach((proposition) => {
+        if (!stateIds.includes(proposition.get('id'))) {
+          match = false;
+        }
+      });
+
+      if (match) {
         selections.push(operator);
       }
     });
