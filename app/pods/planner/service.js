@@ -263,7 +263,12 @@ export default Service.extend({
       );
       return [true, currentState, currentPlan];
     } else {
-      let selections = this.selectOperators(goal, nextState, nextOperatorsUsed);
+      let selections = this.selectOperators(
+        goal,
+        nextState,
+        nextOperatorsUsed,
+        nextPlan
+      );
       if (!isPresent(selections)) {
         // if no selections, failed to reach goal
         log(
@@ -318,11 +323,50 @@ export default Service.extend({
   },
 
   //
+  // getNewAdditions(array, array): [array]
+  //
+  // If plan is empty, return state;
+  // otherwise return new additions from latest
+  // plan item
+  //
+  // Returns an array of propositions
+  //
+  getNewAdditions(nextState, nextPlan) {
+    log(
+      '%c getNewAdditions - START:',
+      'background-color: #d0d0d0',
+      nextState.map((proposition) => proposition.get('id')),
+      nextPlan
+    );
+    if (
+      isPresent(nextPlan) &&
+      isPresent(nextPlan.get('lastObject.newAdditions'))
+    ) {
+      log(
+        '%c getNewAdditions - END:',
+        'background-color: #d0d0d0',
+        nextPlan
+          .get('lastObject.newAdditions')
+          .map((proposition) => proposition.get('id'))
+      );
+
+      return nextPlan.get('lastObject.newAdditions');
+    }
+    log(
+      '%c getNewAdditions - END:',
+      'background-color: #d0d0d0',
+      nextState.map((proposition) => proposition.get('id'))
+    );
+
+    return nextState;
+  },
+
+  //
   // selectOperators(string): array
   //
   // Finds all operators containing the goal in the additions list.
   //
-  selectOperators(goal, nextState, nextOperatorsUsed) {
+  selectOperators(goal, nextState, nextOperatorsUsed, nextPlan) {
     log(
       '%c selectOperators - START:',
       'background-color: #da55ba',
@@ -330,10 +374,10 @@ export default Service.extend({
       nextOperatorsUsed
     );
     let selections = A([]);
-    let sortedOperators = this.get('operators');
+    let operators = this.get('operators');
     let usedSelections = A([]);
     let unusedSelections = A([]);
-
+    let newAdditions = this.getNewAdditions(nextState, nextPlan);
     /*
     let operatorsUsed = this.get('operatorsUsed');
     if (operatorsUsed === null) {
@@ -341,43 +385,54 @@ export default Service.extend({
     }
     */
 
-    // preconditions are met by state
-    let stateIds = nextState.map((proposition) => proposition.get('id'));
-    stateIds = stateIds.reverse();
-    stateIds.forEach((stateId) => {
-      sortedOperators.forEach((operator) => {
-        // additions must add something not already in state
-        let additions = operator
-          .get('additions')
-          .map((proposition) => proposition.get('id'));
-        let matchAdditions = !additions.includes(stateId);
-
-        // state must meet preconditions
-        let matchPreconditions = true;
-        operator.get('preconditions').forEach((proposition) => {
-          if (!stateIds.includes(proposition.get('id'))) {
-            matchPreconditions = false;
-          }
-        });
-
-        if (matchPreconditions) {
-          selections.push(operator);
-        }
-      });
-    });
-
-    // must not already be in state
-    selections = selections.filter((operator) => {
-      let additionIds = operator
-        .get('additions')
-        .map((proposition) => proposition.get('id'));
+    /*
+    Prefer operators with a precondition enabled by a new addition
+    */
+    let newAdditionOperators = A([]);
+    let notNewAdditionOperators = A([]);
+    operators.forEach((operator) => {
       let match = false;
-      additionIds.forEach((additionId) => {
-        if (!stateIds.includes(additionId)) {
+
+      newAdditions.forEach((proposition) => {
+        if (
+          operator
+            .get('preconditions')
+            .map((precondition) => precondition.get('id'))
+            .includes(proposition.get('id'))
+        ) {
           match = true;
         }
       });
-      return match;
+      if (match) {
+        newAdditionOperators.push(operator);
+      } else {
+        notNewAdditionOperators.push(operator);
+      }
+    });
+    let sortedOperators = newAdditionOperators.concat(notNewAdditionOperators);
+
+    // preconditions are met by state
+    let stateIds = nextState.map((proposition) => proposition.get('id'));
+    sortedOperators.forEach((operator) => {
+      // state must meet preconditions
+      let matchPreconditions = true;
+      operator.get('preconditions').forEach((proposition) => {
+        if (!stateIds.includes(proposition.get('id'))) {
+          matchPreconditions = false;
+        }
+      });
+
+      // additions must add something not already in state
+      let matchAdditions = false;
+      operator.get('additions').forEach((proposition) => {
+        if (!stateIds.includes(proposition.get('id'))) {
+          matchAdditions = true;
+        }
+      });
+
+      if (matchPreconditions && matchAdditions) {
+        selections.push(operator);
+      }
     });
     selections = selections.uniqBy('name');
     // Any operators that have been used before are
