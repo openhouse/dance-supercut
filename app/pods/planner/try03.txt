@@ -1,15 +1,3 @@
-<div class="vbox viewport">
-  <section class="main hbox space-between">
-    <aside class="pastel-black pastel-bg">
-      <StorySettings class="" @operators={{model.operators}}/>
-    </aside>
-    <article class="">
-      <StoryOutline class="container"/>
-    </article>
-  </section>
-</div>
-{{outlet}}
-{{!--
 Dreamer has irrational dream.
 Dreamer tells dream to friend as idea.
 Friend hears idea as plan, joins as project member.
@@ -31,4 +19,3 @@ Authority inspects project.
 Resilience of plan obscures irrationality of dream, defers Authority.
 Project members complete plan, bound in friendship.
 Irrational dream is manifest.
---}}

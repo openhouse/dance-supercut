@@ -1,7 +1,7 @@
 <button {{action "getOutline"}}>Make Outline</button>
-{{#if planner.uPlan}}
+{{#if uPlanner.uPlan}}
   <h1>Beginning</h1>
-  {{#each planner.uPlan as |step|}}
+  {{#each uPlanner.uPlan as |step|}}
     <dl>
       <dt>{{step.operator.name}}</dt>
       <dd>
@@ -16,11 +16,11 @@
       </dd>
     </dl>
   {{/each}}
-  {{#if planner.uGoalComplete}}
+  {{#if uPlanner.uGoalComplete}}
     <h1>Ending</h1>
     <button {{action "getOutline"}}>Start Again</button>
   {{else}}
-    {{#each planner.currentSelections as |operator|}}
+    {{#each uPlanner.currentSelections as |operator|}}
       <button {{action "uTakeStep" operator}}>
         {{operator.name}}
       </button>

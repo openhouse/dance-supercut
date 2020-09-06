@@ -5,17 +5,17 @@ import { A } from '@ember/array';
 const { log } = console;
 
 export default Component.extend({
-  planner: service(),
+  uPlanner: service(),
   currentPlan: alias('planner.currentPlan'),
 
   actions: {
     getOutline() {
-      let planner = this.get('planner');
+      let uPlanner = this.get('uPlanner');
       //
       // let [success, state, plan] =
       //planner.plan(['dream-manifest'], ['dreamer-appears']); // Change this line for your operators.
       // goal, currentState, currentPlan, currentOperatorsUsed
-      let result = planner.startInteractive(
+      let result = uPlanner.startInteractive(
         ['dream-manifest'],
         ['dreamer-appears']
       );
@@ -23,8 +23,8 @@ export default Component.extend({
       return result;
     },
     uTakeStep(operator) {
-      let planner = this.get('planner');
-      planner.uTakeStep(A([operator]));
+      let uPlanner = this.get('uPlanner');
+      uPlanner.uTakeStep(A([operator]));
     },
   },
 });

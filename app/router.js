@@ -10,4 +10,5 @@ Router.map(function() {
   this.route('outline');
   this.route('graph');
   this.route('images');
+  this.route('u-outline');
 });
