@@ -26,14 +26,16 @@ import { computed } from '@ember/object';
 import { isPresent } from '@ember/utils';
 import { A, isArray } from '@ember/array';
 
-const { log } = console;
-// const log = () => {};
+// const { log } = console;
+const log = () => {};
 export default Service.extend({
   store: service(),
   defaultGoalId: 'dream-manifest',
   defaultStateIds: 'dreamer-appears',
   customGoalId: null,
   customStateIds: null,
+  currentPlan: null,
+  operatorsUsed: null,
 
   init() {
     this._super(...arguments);
@@ -118,14 +120,60 @@ export default Service.extend({
     }
   ),
 
-  currentPlan: null,
+  /*
+  planAdjacenctOperatorIds:
+  from all backward search plans
+  create a lookup object that maps an operator id
+  to all next operator ids enroute to goal
+
+  returns an object with operator ids as keys
+  and arrays of operator ids as values
+  */
+  planAdjacenctOperatorIds: computed('allPlans.@each', function () {
+    let allPlans = this.get('allPlans');
+    let adjacencies = {};
+    allPlans.forEach((plan) => {
+      plan.forEach((step, stepIndex) => {
+        if (isPresent(step.operator)) {
+          let operator = step.operator;
+          if (!isPresent(adjacencies[operator.get('id')])) {
+            adjacencies[operator.get('id')] = A([]);
+          }
+          if (isPresent(plan[stepIndex + 1])) {
+            let nextOperator = plan[stepIndex + 1].operator;
+            if (
+              !adjacencies[operator.get('id')].includes(nextOperator.get('id'))
+            ) {
+              adjacencies[operator.get('id')].push(nextOperator.get('id'));
+            }
+          }
+        }
+      });
+    });
+    return adjacencies;
+  }),
+  // return next operators for operator from all plans
+  getNextOperators(operator) {
+    if (isPresent(operator)) {
+      let planAdjacenctOperatorIds = this.get('planAdjacenctOperatorIds');
+      let operatorIds = planAdjacenctOperatorIds[operator.get('id')];
+      if (isPresent(operatorIds)) {
+        let operators = A([]);
+        let store = this.get('store');
+        operatorIds.forEach((operatorId) => {
+          operators.push(store.peekRecord('operator', operatorId));
+        });
+        return operators;
+      }
+    }
+    return null;
+  },
 
   // all operators from the store
   operators: computed(function () {
     let store = this.get('store');
     return store.peekAll('operator');
   }),
-  operatorsUsed: null,
 
   //
   // plan(array,array): [boolean,array,array]

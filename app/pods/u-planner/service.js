@@ -30,6 +30,9 @@ const { log } = console;
 // const log = () => {};
 export default Service.extend({
   store: service(),
+
+  planner: service(), // connect backward search
+
   defaultGoalId: 'dream-manifest',
   defaultStateIds: 'dreamer-appears',
   customGoalId: null,
@@ -333,7 +336,6 @@ export default Service.extend({
     selections.forEach((operator) => {
       if (!success) {
         // use the first operator that works
-
         [success, nextState, nextPlan, nextOperatorsUsed] = this.applyOperator(
           goal,
           operator,
@@ -426,6 +428,15 @@ export default Service.extend({
     let usedSelections = A([]);
     let unusedSelections = A([]);
     let newAdditions = this.getNewAdditions(nextState, nextPlan);
+    let lastOperator = null; // most recent operator in plan
+    let planner = this.get('planner');
+    let allPlansNextOperators = null;
+    let lastStep = nextPlan.lastObject;
+    if (isPresent(lastStep.operator)) {
+      lastOperator = lastStep.operator;
+      allPlansNextOperators = planner.getNextOperators(lastOperator);
+    }
+
     /*
     let operatorsUsed = this.get('operatorsUsed');
     if (operatorsUsed === null) {
@@ -458,6 +469,10 @@ export default Service.extend({
       }
     });
     let sortedOperators = newAdditionOperators.concat(notNewAdditionOperators);
+
+    if (isPresent(allPlansNextOperators)) {
+      sortedOperators = allPlansNextOperators.concat(sortedOperators);
+    }
 
     // preconditions are met by state
     let stateIds = nextState.map((proposition) => proposition.get('id'));
