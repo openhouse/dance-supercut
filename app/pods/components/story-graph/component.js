@@ -16,7 +16,7 @@ const { log } = console;
 const goldenRatio = 0.618033988749855;
 
 export default Component.extend({
-  planner: service(),
+  uPlanner: service(),
   montage: service(),
   currentOperator: alias('montage.currentOperator'),
 
@@ -75,7 +75,7 @@ export default Component.extend({
     });
 
     // load operators
-    let allPlans = self.get('planner.allPlans');
+    let allPlans = self.get('uPlanner.allPlans');
     allPlans.forEach((plan) =>
       plan.forEach((step, stepIndex) => {
         if (isPresent(step.operator)) {

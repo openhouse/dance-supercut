@@ -1,5 +1,7 @@
 /*
-  Ported to Ember.js Service by Jamie Burkart
+  Ported to Ember.js Service
+  MADE INTO FORWARD STATE SEARCH FOR INTERACTIVE
+  by Jamie Burkart
   August 2020
 
   PLANNER.JS
@@ -27,15 +29,16 @@ import { isPresent } from '@ember/utils';
 import { A, isArray } from '@ember/array';
 import { alias } from '@ember/object/computed';
 
-const { log } = console;
-// const log = () => {};
+// const { log } = console;
+const log = () => {};
 export default Service.extend({
   store: service(),
 
   planner: service(), // connect backward search
   allBackwardPlans: alias('planner.allPlans'),
   // returns array of all backward search plans and interactive plan
-  allPlans: computed('allBackwardPlans.@each', 'uPlan.@each', function () {
+  allPlans: computed('allBackwardPlans', 'uPlan', function () {
+    log('allPlans - START');
     let allBackwardPlans = this.get('allBackwardPlans');
     let uPlan = this.get('uPlan');
     let allPlans = A([]);
@@ -47,6 +50,8 @@ export default Service.extend({
     if (isPresent(uPlan)) {
       allPlans.push(uPlan);
     }
+    log('allPlans - END');
+
     return allPlans;
   }),
 
@@ -65,78 +70,6 @@ export default Service.extend({
   resetPlanner() {
     this.set('operatorsUsed', []);
   },
-
-  // generate array of all possible plans
-  allPlansCache: null,
-  // cache settings for all plans
-  allPlansGoalIds: null,
-  allPlansStateIds: null,
-
-  makeAllPlans(customGoalIds, customStateIds) {
-    // allow override of defaults
-    let goalIds = this.get('defaultGoalId');
-    let stateIds = this.get('defaultStateIds');
-
-    // override defaults with custom
-    // ensure that plan() recieves arrays as arguments
-    if (isPresent(customGoalIds)) {
-      if (isArray(customGoalIds)) {
-        goalIds = customGoalIds;
-      } else {
-        goalIds = A([customGoalIds]);
-      }
-    }
-    if (isPresent(customStateIds)) {
-      if (isArray(customStateIds)) {
-        stateIds = customStateIds;
-      } else {
-        stateIds = A([customStateIds]);
-      }
-    }
-
-    // initialize
-    this.resetPlanner();
-    let allPlans = [];
-    let allPlanIds = [];
-
-    let running = true;
-    while (running) {
-      running = false;
-      let [success, endState, plan] = this.plan(goalIds, stateIds);
-      let planOperatorIds = plan.map((item) => {
-        if (isPresent(item.operator) && isPresent(item.operator.get('id'))) {
-          return item.operator.get('id');
-        }
-      });
-      let planId = planOperatorIds.join('-');
-      if (success && !allPlanIds.includes(planId)) {
-        allPlans.push(plan);
-        allPlanIds.push(planId);
-        running = true;
-      }
-    }
-    return allPlans;
-  },
-
-  allPlans: computed(
-    'defaultGoalId',
-    'defaultStateIds',
-    'customGoalId',
-    'customStateIds',
-    function () {
-      let customGoalIds = this.get('customGoalId');
-      let customStateIds = this.get('customStateIds');
-      if (isPresent(customGoalIds) && !isArray(customGoalIds)) {
-        customGoalIds = A([customGoalIds]);
-      }
-      if (isPresent(customStateIds) && !isArray(customStateIds)) {
-        customStateIds = A([customStateIds]);
-      }
-
-      let allPlans = this.makeAllPlans(customGoalIds, customStateIds);
-      return allPlans;
-    }
-  ),
 
   currentPlan: null,
 
