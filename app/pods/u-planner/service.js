@@ -25,6 +25,7 @@ import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import { isPresent } from '@ember/utils';
 import { A, isArray } from '@ember/array';
+import { alias } from '@ember/object/computed';
 
 const { log } = console;
 // const log = () => {};
@@ -32,6 +33,22 @@ export default Service.extend({
   store: service(),
 
   planner: service(), // connect backward search
+  allBackwardPlans: alias('planner.allPlans'),
+  // returns array of all backward search plans and interactive plan
+  allPlans: computed('allBackwardPlans.@each', 'uPlan.@each', function () {
+    let allBackwardPlans = this.get('allBackwardPlans');
+    let uPlan = this.get('uPlan');
+    let allPlans = A([]);
+    if (isPresent(allBackwardPlans)) {
+      allBackwardPlans.forEach((plan) => {
+        allPlans.push(plan);
+      });
+    }
+    if (isPresent(uPlan)) {
+      allPlans.push(uPlan);
+    }
+    return allPlans;
+  }),
 
   defaultGoalId: 'dream-manifest',
   defaultStateIds: 'dreamer-appears',
