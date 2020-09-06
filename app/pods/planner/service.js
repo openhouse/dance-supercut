@@ -127,8 +127,6 @@ export default Service.extend({
   }),
   operatorsUsed: null,
 
-  currentSelections: null,
-
   //
   // plan(array,array): [boolean,array,array]
   //
@@ -137,32 +135,8 @@ export default Service.extend({
   // true, the end state, and a plan if the goals can
   // be achieved; returns false, the currentState, and
   // an invalid plan otherwise.
-  uGoal: null,
-  uSuccess: null,
-  uState: null,
-  uPlan: null,
-  uOperatorsUsed: null,
-  uGoalComplete: computed('uPlan', function () {
-    let plan = this.get('uPlan');
-    let goalId = this.get('uGoal.id');
-    let complete = false;
-    plan.forEach((step) => {
-      if (isPresent(step) && isPresent(step.operator)) {
-        log('step', step);
-        if (
-          step.operator
-            .get('additions')
-            .map((proposition) => proposition.get('id'))
-            .includes(goalId)
-        ) {
-          complete = true;
-        }
-      }
-    });
-    return complete;
-  }),
-  startInteractive(goalIds, currentStateIds) {
-    log('startInteractive - START:', goalIds, currentStateIds);
+  plan(goalIds, currentStateIds) {
+    log('plan - START:', goalIds, currentStateIds);
     let store = this.get('store');
     let goals = [];
     let currentState = [];
@@ -183,7 +157,6 @@ export default Service.extend({
     });
 
     let nextState = [...currentState]; // clone currentState
-    let nextOperatorsUsed = A([]);
     let currentPlan = [];
     let success = true;
 
@@ -211,26 +184,17 @@ export default Service.extend({
     // plan with attributes
     // include initial state as newAdditions
     currentPlan.push(nextPlanItem);
+
     goals.forEach((goal) => {
-      this.set('uGoal', goal);
-      // try {
-      let result = this.achieveGoal(
-        goal,
-        nextState,
-        currentPlan,
-        nextOperatorsUsed // operators used starts empty
-      );
-      log('result', result);
-      success = false;
-      if (isPresent(result)) {
-        [success, nextState, currentPlan, nextOperatorsUsed] = result;
-      }
-      /*
-      } catch (e) {
-        log('error', e);
+      try {
+        [success, nextState, currentPlan] = this.achieveGoal(
+          goal,
+          nextState,
+          currentPlan
+        );
+      } catch {
         success = false;
       }
-      */
       if (!success) {
         log('unable to achieve goal ' + goal.get('id'));
       }
@@ -252,13 +216,6 @@ export default Service.extend({
       nextState.map((proposition) => proposition.get('id')),
       currentPlan.map((item) => item.operator)
     );
-
-    this.setProperties({
-      uSuccess: success,
-      uState: nextState,
-      uPlan: currentPlan,
-      uOperatorsUsed: nextOperatorsUsed,
-    });
     return [success, nextState, currentPlan];
   },
 
@@ -272,19 +229,17 @@ export default Service.extend({
   // Returns an updated state and plan if an attempt succeeds;
   // returns the current state and plan if all fail.
   //
-  achieveGoal(goal, currentState, currentPlan, currentOperatorsUsed) {
+  achieveGoal(goal, currentState, currentPlan) {
     log(
       '%c achieveGoal - START:',
       'background-color: #bada55',
-      goal.get('id'),
-      currentState.map((proposition) => proposition.get('id')),
-      currentPlan,
-      currentOperatorsUsed
+      goal,
+      currentState.map((operator) => operator.get('id')),
+      currentPlan
     );
 
     let nextState = [...currentState]; // clone currentState
     let nextPlan = [...currentPlan]; // clone currentPlan
-    let nextOperatorsUsed = [...currentOperatorsUsed];
 
     if (
       nextState
@@ -300,113 +255,39 @@ export default Service.extend({
       );
       return [true, currentState, currentPlan];
     } else {
-      let selections = this.selectOperators(
-        goal,
-        nextState,
-        nextOperatorsUsed,
-        nextPlan
-      );
-      this.set('currentSelections', selections);
-    }
-  },
-  uTakeStep(selections) {
-    let goal = this.get('uGoal');
-    let currentState = this.get('uState');
-    let currentPlan = this.get('uPlan');
-    let currentOperatorsUsed = this.get('uOperatorsUsed');
-    let nextState = [...currentState]; // clone currentState
-    let nextPlan = [...currentPlan]; // clone currentPlan
-    let nextOperatorsUsed = [...currentOperatorsUsed];
+      let selections = this.selectOperators(goal);
+      let success = false;
 
-    if (!isPresent(selections)) {
-      // if no selections, failed to reach goal
-      log(
-        '%c achieveGoal - END (no selections):',
-        'background-color: #bada55',
-        false,
-        currentState.map((operator) => operator.get('id')),
-        currentPlan
-      );
-      return [false, currentState, currentPlan, currentOperatorsUsed];
-    }
-    let success = false;
-    selections.forEach((operator) => {
-      if (!success) {
-        // use the first operator that works
-
-        [success, nextState, nextPlan, nextOperatorsUsed] = this.applyOperator(
-          goal,
-          operator,
-          nextState,
-          nextPlan,
-          nextOperatorsUsed
-        );
-      }
-      this.setProperties({
-        uSuccess: success,
-        uState: nextState,
-        uPlan: nextPlan,
-        uOperatorsUsed: nextOperatorsUsed,
+      selections.forEach((operator) => {
+        if (!success) {
+          [success, nextState, nextPlan] = this.applyOperator(
+            operator,
+            nextState,
+            nextPlan
+          );
+        }
       });
-    });
 
-    if (success) {
-      log(
-        '%c achieveGoal - END EVERREACHED:',
-        'background-color: #bada55',
-        true,
-        nextState.map((operator) => operator.get('id')),
-        nextPlan
-      );
-      return [true, nextState, nextPlan, nextOperatorsUsed];
-    } else {
-      log(
-        '%c achieveGoal - END EVERREACHED:',
-        'background-color: #bada55',
-        false,
-        currentState.map((operator) => operator.get('id')),
-        currentPlan
-      );
-      return [false, currentState, currentPlan, currentOperatorsUsed];
+      if (success) {
+        log(
+          '%c achieveGoal - END:',
+          'background-color: #bada55',
+          true,
+          nextState.map((operator) => operator.get('id')),
+          nextPlan
+        );
+        return [true, nextState, nextPlan];
+      } else {
+        log(
+          '%c achieveGoal - END:',
+          'background-color: #bada55',
+          false,
+          currentState.map((operator) => operator.get('id')),
+          currentPlan
+        );
+        return [false, currentState, currentPlan];
+      }
     }
-  },
-  //
-  // getNewAdditions(array, array): [array]
-  //
-  // If plan is empty, return state;
-  // otherwise return new additions from latest
-  // plan item
-  //
-  // Returns an array of propositions
-  //
-  getNewAdditions(nextState, nextPlan) {
-    log(
-      '%c getNewAdditions - START:',
-      'background-color: #d0d0d0',
-      nextState.map((proposition) => proposition.get('id')),
-      nextPlan
-    );
-    if (
-      isPresent(nextPlan) &&
-      isPresent(nextPlan.get('lastObject.newAdditions'))
-    ) {
-      log(
-        '%c getNewAdditions - END:',
-        'background-color: #d0d0d0',
-        nextPlan
-          .get('lastObject.newAdditions')
-          .map((proposition) => proposition.get('id'))
-      );
-
-      return nextPlan.get('lastObject.newAdditions');
-    }
-    log(
-      '%c getNewAdditions - END:',
-      'background-color: #d0d0d0',
-      nextState.map((proposition) => proposition.get('id'))
-    );
-
-    return nextState;
   },
 
   //
@@ -414,79 +295,35 @@ export default Service.extend({
   //
   // Finds all operators containing the goal in the additions list.
   //
-  selectOperators(goal, nextState, nextOperatorsUsed, nextPlan) {
+  selectOperators(goal) {
     log(
       '%c selectOperators - START:',
       'background-color: #da55ba',
-      goal.get('id'),
-      nextOperatorsUsed
+      goal.get('id')
     );
-    let selections = A([]);
-    let operators = this.get('operators');
-    let usedSelections = A([]);
-    let unusedSelections = A([]);
-    let newAdditions = this.getNewAdditions(nextState, nextPlan);
-    /*
+    let selections = [];
+    let sortedOperators = this.get('operators');
+    let usedSelections = [];
+    let unusedSelections = [];
     let operatorsUsed = this.get('operatorsUsed');
     if (operatorsUsed === null) {
       operatorsUsed = [];
     }
-    */
 
-    /*
-    Prefer operators with a precondition enabled by a new addition
-    */
-    let newAdditionOperators = A([]);
-    let notNewAdditionOperators = A([]);
-    operators.forEach((operator) => {
-      let match = false;
-
-      newAdditions.forEach((proposition) => {
-        if (
-          operator
-            .get('preconditions')
-            .map((precondition) => precondition.get('id'))
-            .includes(proposition.get('id'))
-        ) {
-          match = true;
-        }
-      });
-      if (match) {
-        newAdditionOperators.push(operator);
-      } else {
-        notNewAdditionOperators.push(operator);
-      }
-    });
-    let sortedOperators = newAdditionOperators.concat(notNewAdditionOperators);
-
-    // preconditions are met by state
-    let stateIds = nextState.map((proposition) => proposition.get('id'));
     sortedOperators.forEach((operator) => {
-      // state must meet preconditions
-      let matchPreconditions = true;
-      operator.get('preconditions').forEach((proposition) => {
-        if (!stateIds.includes(proposition.get('id'))) {
-          matchPreconditions = false;
-        }
-      });
-
-      // additions must add something not already in state
-      let matchAdditions = false;
-      operator.get('additions').forEach((proposition) => {
-        if (!stateIds.includes(proposition.get('id'))) {
-          matchAdditions = true;
-        }
-      });
-
-      if (matchPreconditions && matchAdditions) {
+      if (
+        operator
+          .get('additions')
+          .map((addition) => addition.get('id'))
+          .includes(goal.get('id'))
+      ) {
         selections.push(operator);
       }
     });
-    selections = selections.uniqBy('name');
     // Any operators that have been used before are
     // moved to the end of the list.
     selections.forEach((operator) => {
-      if (nextOperatorsUsed.includes(operator.get('name'))) {
+      if (operatorsUsed.includes(operator.get('name'))) {
         usedSelections.push(operator);
       } else {
         unusedSelections.push(operator);
@@ -510,109 +347,21 @@ export default Service.extend({
   // returns the current state and plan, if it fails:
   // [false,state,plan]
   //
-  applyOperator(
-    goal,
-    operator,
-    currentState,
-    currentPlan,
-    currentOperatorsUsed
-  ) {
+  applyOperator(operator, currentState, currentPlan) {
     log(
       '%c applyOperator - START:',
       'background-color: #55bada',
-      goal.get('id'),
       operator.get('name'),
       currentState.map((proposition) => proposition.get('id')),
-      currentPlan,
-      currentOperatorsUsed
+      currentPlan
     );
 
     let nextState = [...currentState];
     let nextPlan = [...currentPlan];
-    let nextOperatorsUsed = [...currentOperatorsUsed];
     let success = true;
 
-    /*
-    Hypothetically apply operator
-    */
-    let nextPlanItem = {
-      operator: operator,
-      newAdditions: [],
-    };
-
-    if (operator.get('deletions.length') > 0) {
-      log('   deleting ');
-    }
-
-    operator.get('deletions').forEach((deletion) => {
-      log('       ' + deletion.get('id'));
-
-      // remove deletion from state
-      nextState = nextState.filter((proposition) => {
-        return proposition.get('id') != deletion.get('id');
-      });
-    });
-
-    if (operator.get('additions.length') > 0) {
-      log('   adding ');
-    }
-
-    operator.get('additions').forEach((addition) => {
-      log('       ' + addition.get('id'));
-
-      // plan with attributes
-      // add additions to nextPlanItem.newAdditions if not already in nextState
-      if (
-        !nextState
-          .map((proposition) => proposition.get('id'))
-          .includes(addition.get('id'))
-      ) {
-        nextPlanItem.newAdditions.push(addition);
-      }
-
-      nextState.push(addition);
-    });
-
-    // plan with attributes
-    nextPlan.push(nextPlanItem);
-
-    // increment operator.useCount
-    operator.set('useCount', operator.get('useCount') + 1);
-
-    /*
-
-    let operatorsUsed = this.get('operatorsUsed');
-    if (operatorsUsed === null) {
-      operatorsUsed = [];
-    }
-    */
-    nextOperatorsUsed.push(operator.get('name'));
-    // this.set('operatorsUsed', operatorsUsed);
-    let result = this.achieveGoal(goal, nextState, nextPlan, nextOperatorsUsed);
-    if (isPresent(result)) {
-      [success, nextState, nextPlan, nextOperatorsUsed] = result;
-    }
-    this.setProperties({
-      uSuccess: success,
-      uState: nextState,
-      uPlan: nextPlan,
-      uOperatorsUsed: nextOperatorsUsed,
-    });
-
-    log(
-      '%c applyOperator - END:',
-      'background-color: #55bada',
-      success,
-      nextState.map((propsition) => propsition.get('id')),
-      nextPlan,
-      nextOperatorsUsed
-    );
-    return [success, nextState, nextPlan, nextOperatorsUsed];
-    /*
-    // return [true, nextState, nextPlan, nextOperatorsUsed];
-
     // Attempt to achieve each of the preconditions.
-    operator.get('additions').forEach((proposition) => {
+    operator.get('preconditions').forEach((proposition) => {
       if (success) {
         [success, nextState, nextPlan] = this.achieveGoal(
           proposition,
@@ -626,6 +375,64 @@ export default Service.extend({
     // deleting its deletions and adding its additions to the state.
     if (success) {
       // plan with attributes
+      let nextPlanItem = {
+        operator: operator,
+        newAdditions: [],
+      };
+
+      if (operator.get('deletions.length') > 0) {
+        log('   deleting ');
+      }
+
+      operator.get('deletions').forEach((deletion) => {
+        log('       ' + deletion.get('id'));
+
+        // remove deletion from state
+        nextState = nextState.filter((proposition) => {
+          return proposition.get('id') != deletion.get('id');
+        });
+      });
+
+      if (operator.get('additions.length') > 0) {
+        log('   adding ');
+      }
+
+      operator.get('additions').forEach((addition) => {
+        log('       ' + addition.get('id'));
+
+        // plan with attributes
+        // add additions to nextPlanItem.newAdditions if not already in nextState
+        if (
+          !nextState
+            .map((proposition) => proposition.get('id'))
+            .includes(addition.get('id'))
+        ) {
+          nextPlanItem.newAdditions.push(addition);
+        }
+
+        nextState.push(addition);
+      });
+
+      // plan with attributes
+      nextPlan.push(nextPlanItem);
+
+      // increment operator.useCount
+      operator.set('useCount', operator.get('useCount') + 1);
+
+      let operatorsUsed = this.get('operatorsUsed');
+      if (operatorsUsed === null) {
+        operatorsUsed = [];
+      }
+      operatorsUsed.push(operator.get('name'));
+      this.set('operatorsUsed', operatorsUsed);
+      log(
+        '%c applyOperator - END:',
+        'background-color: #55bada',
+        true,
+        nextState.map((proposition) => proposition.get('id')),
+        nextPlan
+      );
+      return [true, nextState, nextPlan];
     } else {
       log(
         '%c applyOperator - END:',
@@ -636,7 +443,5 @@ export default Service.extend({
       );
       return [false, currentState, currentPlan];
     }
-
-    */
   },
 });

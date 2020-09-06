@@ -15,16 +15,9 @@ export default Component.extend({
       // let [success, state, plan] =
       //planner.plan(['dream-manifest'], ['dreamer-appears']); // Change this line for your operators.
       // goal, currentState, currentPlan, currentOperatorsUsed
-      let result = planner.startInteractive(
-        ['dream-manifest'],
-        ['dreamer-appears']
-      );
+      let result = planner.plan(['dream-manifest'], ['dreamer-appears']);
       log(result);
       return result;
-    },
-    uTakeStep(operator) {
-      let planner = this.get('planner');
-      planner.uTakeStep(A([operator]));
     },
   },
 });
