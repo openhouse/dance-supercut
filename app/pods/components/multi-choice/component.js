@@ -23,7 +23,7 @@ export default Component.extend({
       }
 
       let percent =
-        ((videoTime - choiceStart) / (videoDuration - choiceStart)) * 100;
+        ((videoTime - choiceStart + 1) / (videoDuration - choiceStart)) * 100;
 
       return percent;
     }
@@ -78,11 +78,6 @@ export default Component.extend({
         duration - time > 0 &&
         showChoices
       ) {
-        log('choosing');
-        log('chosen', chosen);
-        log('duration - time', duration - time);
-        log('showChoices', showChoices);
-
         let defaultOperator = this.get('choices.firstObject.operator');
         this.choose(defaultOperator);
       }
