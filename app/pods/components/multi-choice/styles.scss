@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 1000;
+  z-index: 1001;
   top: 100%;
   opacity: 0;
   background-color: rgba(
@@ -15,7 +15,7 @@
   );
   box-shadow: $box-shadow;
   &.active {
-    top: calc(#{$golden-ratio * 100%} + 4rem);
+    top: calc(min(#{$golden-ratio * 100%} + 4rem, calc(100vh - 12rem)));
     opacity: 1;
   }
 }
@@ -25,7 +25,18 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin: 0rem 1rem;
+  margin: 0rem 0.5rem;
+
+  @media (min-width: $breakpoint-sm) {
+    margin: 0rem 2rem;
+  }
+
+  @media (min-width: $breakpoint-md) {
+    margin: 0rem 2rem;
+  }
+  @media (min-width: $breakpoint-lg) {
+    margin: 0rem 3rem;
+  }
 }
 .active .btn {
   opacity: 1;

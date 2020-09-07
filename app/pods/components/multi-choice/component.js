@@ -1,6 +1,6 @@
 import Component from '@ember/component';
 import { inject as service } from '@ember/service';
-import { computed } from '@ember/object';
+import { computed, observer } from '@ember/object';
 import { alias } from '@ember/object/computed';
 import { isPresent } from '@ember/utils';
 const { log } = console;
@@ -54,6 +54,41 @@ export default Component.extend({
     }
     return null;
   }),
+  // reset chosen when operator changes
+  currentOperatorObserver: observer('montage.currentOperator', function () {
+    log('currentOperatorObserver');
+    this.set('chosen', null);
+  }),
+
+  // if no choice has been made, choose default with three seconds to go
+  videoTimeObserver: observer(
+    'videoTime',
+    'showChoices',
+    'chosen',
+    'videoDuration',
+    'choices.firstObject.operator',
+    function () {
+      let time = this.get('videoTime');
+      let duration = this.get('videoDuration');
+      let showChoices = this.get('showChoices');
+      let chosen = this.get('chosen');
+      if (
+        chosen === null &&
+        duration - time < 3 &&
+        duration - time > 0 &&
+        showChoices
+      ) {
+        log('choosing');
+        log('chosen', chosen);
+        log('duration - time', duration - time);
+        log('showChoices', showChoices);
+
+        let defaultOperator = this.get('choices.firstObject.operator');
+        this.choose(defaultOperator);
+      }
+    }
+  ),
+
   choices: computed('montage.choices', 'chosen', function () {
     let options = this.get('montage.choices');
     let chosen = this.get('chosen');
@@ -110,11 +145,17 @@ export default Component.extend({
     }
     return classes.join(' ');
   }),
-
+  choose(operator) {
+    this.set('chosen', operator);
+    this.set('montage.nextChoice', operator);
+  },
   actions: {
     choose(operator) {
+      this.choose(operator);
+      /*
       this.set('chosen', operator);
       this.set('montage.nextChoice', operator);
+      */
     },
   },
 });

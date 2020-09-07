@@ -12,8 +12,14 @@ mark {
   background-color: rgba(255, 255, 255, $golden-ratio);
   box-shadow: $box-shadow;
   border-radius: 0.25rem;
-  margin: 0rem 0.75rem;
-  padding: 0.75rem 1.25rem;
+  margin: 0rem 0.5rem;
+  padding: 0.75rem 0.75rem;
+
+  @media (min-width: $breakpoint-sm) {
+    margin: 0rem 0.75rem;
+    padding: 0.75rem 1.25rem;
+  }
+
   opacity: 0;
   max-width: 100% - $golden-ratio * 100%;
   font-size: 1rem;

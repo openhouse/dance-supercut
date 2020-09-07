@@ -122,4 +122,10 @@ $box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 1-$golden-ratio),
   flex-direction: column;
 }
 
+/* RESPONSIVE */
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+
 @import 'pod-styles';
