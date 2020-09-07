@@ -14,7 +14,8 @@ import dagreD3 from 'dagre-d3';
 import chunk from 'chunk-text';
 const goldenRatio = 0.618033988749855;
 
-const { log } = console;
+//const { log } = console;
+const log = () => {};
 
 export default Component.extend({
   uPlanner: service(),

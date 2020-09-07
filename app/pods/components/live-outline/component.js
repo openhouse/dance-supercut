@@ -19,7 +19,6 @@ export default Component.extend({
         ['dream-manifest'],
         ['dreamer-appears']
       );
-      log(result);
       return result;
     },
     uTakeStep(operator) {

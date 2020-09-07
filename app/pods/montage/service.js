@@ -52,7 +52,6 @@ export default Service.extend({
     });
   },
   async playStep() {
-    log('playStep - START');
     let vid = this.get('video');
     let { newAdditions, operator } = this.get('currentStep');
     let uPlanner = this.get('uPlanner');
@@ -87,7 +86,7 @@ export default Service.extend({
           vid.src = clip.get('src');
           vid.currentTime = 0;
           vid.play();
-          vid.volume = 0;
+          vid.volume = 1;
 
           // show choices at min(120 words a minute, clip length)
 
@@ -125,7 +124,6 @@ export default Service.extend({
 
   // DOM video element is ready
   videoReady(videoElement) {
-    log('videoReady - START');
     let self = this;
 
     // add video element event listeners
@@ -142,9 +140,7 @@ export default Service.extend({
       ['dream-manifest'],
       ['dreamer-appears']
     );
-    log('result', result);
     this.set('playing', true);
-    log('videoReady - END');
   },
 
   // detect when currentOperator has advanced and play operator

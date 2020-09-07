@@ -24,11 +24,6 @@ export default Component.extend({
 
       let percent =
         ((videoTime - choiceStart) / (videoDuration - choiceStart)) * 100;
-      log('videoDuration', videoDuration);
-      log('choiceStart', choiceStart);
-      log('videoTime', videoTime);
-      log('videoDuration - videoTime', videoDuration - videoTime);
-      log('videoDuration - choiceStart', videoDuration - choiceStart);
 
       return percent;
     }
@@ -39,7 +34,6 @@ export default Component.extend({
     let videoDuration = this.get('videoDuration');
     let choiceTime = this.get('choiceTime');
     let choiceStart = Math.max(3, videoDuration - choiceTime);
-    log('choiceStart', choiceStart);
     return choiceStart;
   }),
 
@@ -50,20 +44,17 @@ export default Component.extend({
     if (isPresent(choices)) {
       let allNames = choices.map((option) => {
         if (isPresent(option.operator)) {
-          log(option.operator);
           return option.operator.get('name');
         }
       });
       let names = allNames.join(' ');
       let words = names.split(' ');
       let wordCount = words.length;
-      log('choiceTime', wordCount * 2);
       return wordCount * 2; // 2 seconds per word
     }
     return null;
   }),
   choices: computed('montage.choices', 'chosen', function () {
-    log('choices');
     let options = this.get('montage.choices');
     let chosen = this.get('chosen');
     let choices = [];
@@ -74,9 +65,6 @@ export default Component.extend({
           selected: false,
         };
         if (isPresent(chosen)) {
-          log("chosen.get('id')", chosen.get('id'));
-          log("operator.get('id')", operator.get('id'));
-
           if (chosen.get('id') == operator.get('id')) {
             choice.selected = true;
           }
@@ -103,7 +91,6 @@ export default Component.extend({
       if (!videoMetaLoaded) {
         return false; // wait until duration loads
       }
-      log('showChoices choiceStart', choiceStart);
       if (videoTime < choiceStart) {
         // wait until choice start time in clip
         return false;
@@ -126,7 +113,6 @@ export default Component.extend({
 
   actions: {
     choose(operator) {
-      log('choose', operator);
       this.set('chosen', operator);
       this.set('montage.nextChoice', operator);
     },
