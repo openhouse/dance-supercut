@@ -41,7 +41,6 @@ export default Model.extend({
         searchWords: searchWords,
         textToHighlight: name,
       });
-      log('chunks', chunks);
       return chunks;
     }
     return null;

@@ -1,6 +1,8 @@
 /* ELEMENTS */
 mark {
-  font-weight: bold;
+  // font-weight: bold;
+  background: transparent;
+  color: #000000;
 }
 
 /* COMPONENTS */
@@ -17,6 +19,7 @@ mark {
   font-size: 1rem;
   cursor: pointer;
   user-select: none;
+  color: map-get($oil-pastels, 'black');
 
   &:hover {
     background-color: rgba(

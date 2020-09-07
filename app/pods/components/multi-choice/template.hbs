@@ -1,9 +1,13 @@
-<aside class="frame -active">
-  <ProgressBar @percent={{20}}/>
+<aside class={{mainClassNames}}>
+  <ProgressBar @percent={{choiceProgressPercent}}/>
   <div class="btn-set">
+    {{#each choices as |option|}}
+      <KeywordBtn onclick={{action "choose" option.operator}} @selected={{option.selected}} @value={{option.operator.highlighted}}/>
+    {{/each}}
+    {{!--
     <KeywordBtn @selected={{false}} @value="Character encounters project, recognizes dramatis personae, lends wise suggestion, adds critical project component."/>
     <KeywordBtn @selected={{true}} @value="Character encounters project, recognizes dramatis personae, lends wise suggestion, adds critical project dimension."/>
-    {{!--
+
     <div class="btn">
       <span class="btn-inner">Character encounters project, recognizes dramatis personae, lends wise suggestion, adds critical project component.</span>
     </div>

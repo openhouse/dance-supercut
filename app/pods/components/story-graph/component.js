@@ -12,14 +12,18 @@ import { once, scheduleOnce } from '@ember/runloop';
 import * as d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 import chunk from 'chunk-text';
-const { log } = console;
 const goldenRatio = 0.618033988749855;
+
+const { log } = console;
 
 export default Component.extend({
   uPlanner: service(),
   montage: service(),
   currentOperator: alias('montage.currentOperator'),
-
+  currentOperatorObserver: observer('currentOperator', function () {
+    log('currentOperatorObserver');
+    this.drawGraph();
+  }),
   // SVG element
   svg: null,
   graph: null,
@@ -217,10 +221,11 @@ export default Component.extend({
     this.centerOperator();
   }),*/
 
-  didRender() {
+  /*
+  didInsertElement() {
     this._super(...arguments);
-    log('didRender');
-    // once('this.drawGraph', this, this);
+    log('didInsertElement');
     this.drawGraph();
   },
+  */
 });

@@ -54,7 +54,7 @@
   },
   {
     "name": "Project members engineer critical project component.",
-    "preconditions": ["collaboration", "friend-member"],
+    "preconditions": ["collaboration", "friend-member", "authority-known"],
     "additions": ["critical-component"],
     "deletions": ["lacks-component"]
   },
@@ -66,13 +66,18 @@
   },
   {
     "name": "Project members perfect plan, add critical project components and dimensions.",
-    "preconditions": ["collaboration", "stranger-member", "friend-member"],
+    "preconditions": [
+      "collaboration",
+      "stranger-member",
+      "friend-member",
+      "authority-known"
+    ],
     "additions": ["critical-component", "critical-dimension"],
     "deletions": ["collaborator-patience", "lacks-component", "lacks-dimension"]
   },
   {
     "name": "Project non-member appears, lends wise suggestion, adds critical project component.",
-    "preconditions": ["collaboration"],
+    "preconditions": ["collaboration", "authority-known"],
     "additions": ["critical-component"],
     "deletions": ["lacks-component"]
   },
@@ -126,7 +131,11 @@
   },
   {
     "name": "Character encounters project, recognizes dramatis personae, lends wise suggestion, adds critical project component.",
-    "preconditions": ["project-underway", "dramatis-personae"],
+    "preconditions": [
+      "project-underway",
+      "dramatis-personae",
+      "authority-known"
+    ],
     "additions": ["character-encountered", "critical-component"],
     "deletions": ["lacks-component"]
   },
@@ -198,7 +207,13 @@
   },
   {
     "name": "Resilience of plan obscures irrationality of dream, defers Authority.",
-    "preconditions": ["trial", "critical-component", "critical-dimension"],
+    "preconditions": [
+      "trial",
+      "critical-component",
+      "critical-dimension",
+      "passed-turbulence-test",
+      "passed-scale-test"
+    ],
     "additions": ["passed-trial"],
     "deletions": ["trial"]
   },
