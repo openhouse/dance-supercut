@@ -214,7 +214,9 @@ export default Component.extend({
   async centerOperator() {
     let operatorId = this.get('currentOperator.id');
     let node = this.get('graph')._nodes[operatorId];
-    this.zoomToNode(node);
+    if (isPresent(node)) {
+      this.zoomToNode(node);
+    }
     this.highlightActiveNode(this.get('currentOperator.guid'));
   },
   /*

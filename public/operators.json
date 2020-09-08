@@ -50,7 +50,12 @@
       "lacks-dimension",
       "collaboration"
     ],
-    "deletions": ["lacks-collaboration", "lacks-patience"]
+    "deletions": [
+      "lacks-collaboration",
+      "lacks-patience",
+      "critical-dimension",
+      "critical-component"
+    ]
   },
   {
     "name": "Project members engineer critical project component.",

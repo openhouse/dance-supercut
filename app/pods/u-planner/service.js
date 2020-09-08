@@ -209,7 +209,7 @@ export default Service.extend({
 
     this.setProperties({
       uSuccess: success,
-      uState: nextState,
+      uState: nextState.uniq(),
       uPlan: currentPlan,
       uOperatorsUsed: nextOperatorsUsed,
     });
@@ -297,7 +297,7 @@ export default Service.extend({
       }
       this.setProperties({
         uSuccess: success,
-        uState: nextState,
+        uState: nextState.uniq(),
         uPlan: nextPlan,
         uOperatorsUsed: nextOperatorsUsed,
       });
@@ -389,15 +389,9 @@ export default Service.extend({
     }
 
     /*
-    let operatorsUsed = this.get('operatorsUsed');
-    if (operatorsUsed === null) {
-      operatorsUsed = [];
-    }
-    */
-
-    /*
     Select operators with a precondition enabled by a new addition
     */
+    /*
     let newAdditionOperators = A([]);
     let notNewAdditionOperators = A([]);
     operators.forEach((operator) => {
@@ -473,12 +467,49 @@ export default Service.extend({
         notNewAdditionOperators.push(operator);
       }
     });
-    log('newAdditionOperators2', newAdditionOperators);
-    log('notNewAdditionOperators2', notNewAdditionOperators);
-    selections = newAdditionOperators;
-    if (selections.length < 1) {
+    // should filter to only new additions?
+    let filterOnlyNewAdditions = true;
+    // yes if new additions include at least one all plans operator
+    if (isPresent(allPlansNextOperators)) {
+      filterOnlyNewAdditions = false;
+      let allPlansOperatorsIds = allPlansNextOperators.map((operator) =>
+        operator.get('id')
+      );
+      newAdditionOperators.forEach((operator) => {
+        if (allPlansOperatorsIds.includes(operator.get('id'))) {
+          filterOnlyNewAdditions = true;
+        }
+      });
+      newAdditionOperators = allPlansNextOperators.concat(newAdditionOperators);
+    }
+    // no if new additions operators array is empty
+    if (newAdditionOperators.length < 1) {
+      filterOnlyNewAdditions = false;
+    }
+    // apply filter
+    if (filterOnlyNewAdditions) {
+      selections = newAdditionOperators;
+    } else {
       selections = newAdditionOperators.concat(notNewAdditionOperators);
     }
+    selections = selections.uniqBy('name');
+    */
+    selections = operators;
+    if (isPresent(allPlansNextOperators)) {
+      selections = allPlansNextOperators;
+    }
+    // preconditions are met by state
+    let stateIds = nextState.map((proposition) => proposition.get('id'));
+    selections = selections.filter((operator) => {
+      let matchPreconditions = true;
+      operator.get('preconditions').forEach((proposition) => {
+        if (!stateIds.includes(proposition.get('id'))) {
+          matchPreconditions = false;
+        }
+      });
+      return matchPreconditions;
+    });
+
     // TRY TO FILTER OUT OPERATORS WITHOUT NEW ADDITIONS
 
     // Any operators that have been used before are
@@ -570,6 +601,7 @@ export default Service.extend({
       }
 
       nextState.push(addition);
+      nextState.uniq();
     });
 
     // plan with attributes
@@ -593,7 +625,7 @@ export default Service.extend({
     }
     this.setProperties({
       uSuccess: success,
-      uState: nextState,
+      uState: nextState.uniq(),
       uPlan: nextPlan,
       uOperatorsUsed: nextOperatorsUsed,
     });

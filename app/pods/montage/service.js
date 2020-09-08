@@ -109,7 +109,7 @@ export default Service.extend({
           vid.src = clip.get('src');
           vid.currentTime = 0;
           vid.play();
-          vid.volume = 0;
+          vid.volume = 1;
           // showing MultiChoice UI is triggered elsewhere by video element events
 
           // wait while clip plays
@@ -123,8 +123,14 @@ export default Service.extend({
       }
     }
 
-    // advance to next step
-    uPlanner.uTakeStep(A([this.get('nextChoice')]));
+    // END or advance to next step
+    if (this.get('uPlanner.uGoalComplete')) {
+      // END
+      this.init();
+    } else {
+      // advance to next step
+      uPlanner.uTakeStep(A([this.get('nextChoice')]));
+    }
   },
 
   durationChange() {
