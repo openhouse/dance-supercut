@@ -25,7 +25,7 @@ module.exports = function (environment) {
       defaultStateId: 'dreamer-appears',
     },
     fastboot: {
-      hostWhitelist: [/^localhost:\d+$/],
+      hostWhitelist: ['dance.ohai.us', /^localhost:\d+$/],
     },
   };
 
