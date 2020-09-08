@@ -216,8 +216,8 @@ export default Component.extend({
     let node = this.get('graph')._nodes[operatorId];
     if (isPresent(node)) {
       this.zoomToNode(node);
+      this.highlightActiveNode(this.get('currentOperator.guid'));
     }
-    this.highlightActiveNode(this.get('currentOperator.guid'));
   },
   /*
   currentOperatorChanged: observer('currentOperator.id', function () {

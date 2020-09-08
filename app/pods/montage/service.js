@@ -5,6 +5,8 @@ import { computed, observer } from '@ember/object';
 import { alias, sort } from '@ember/object/computed';
 import { isPresent } from '@ember/utils';
 import { A } from '@ember/array';
+import { next } from '@ember/runloop';
+
 const { log } = console;
 
 export default Service.extend({
@@ -129,7 +131,17 @@ export default Service.extend({
       this.init();
     } else {
       // advance to next step
-      uPlanner.uTakeStep(A([this.get('nextChoice')]));
+      let self = this;
+      next(self, function () {
+        // code to be executed in the next run loop,
+        // which will be scheduled after the current one
+        let result = uPlanner.uTakeStep(A([self.get('nextChoice')]));
+        let [success, nextState, nextPlan, nextOperatorsUsed] = result;
+        if (!success) {
+          self.init();
+        }
+        log('uPlanner.uTakeStep', result);
+      });
     }
   },
 
