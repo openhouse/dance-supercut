@@ -5,6 +5,8 @@ import { isPresent } from '@ember/utils';
 export default Model.extend({
   // ATTRIBUTES
   isPrologue: attr(),
+  isEpilogue: attr(),
+
   slug: attr(),
   position: attr('number', { defaultValue: 0 }),
   playCount: attr('number', { defaultValue: 0 }),

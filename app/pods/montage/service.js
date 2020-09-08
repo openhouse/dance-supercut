@@ -10,6 +10,9 @@ import { next } from '@ember/runloop';
 const { log } = console;
 
 export default Service.extend({
+  uPlanner: service(),
+  store: service(),
+
   get defaultGoal() {
     return A([ENV.APP.defaultGoalId]);
   },
@@ -30,7 +33,6 @@ export default Service.extend({
   showChoces: false,
   userHasStarted: false, // waiting on user to hit play
 
-  uPlanner: service(),
   uPlan: alias('uPlanner.uPlan'),
 
   // choices of next operators for the MultiChoice UI
@@ -61,12 +63,14 @@ export default Service.extend({
   // actions
 
   // restart at end
+  /*
   uGoalCompleteObserver: observer('montage.uGoalComplete', function () {
     let complete = this.get('montage.uGoalComplete');
     if (complete) {
-      this.init();
+      this.ending();
     }
   }),
+  */
 
   async clipEnded() {
     let vid = this.get('video');
@@ -128,7 +132,7 @@ export default Service.extend({
     // END or advance to next step
     if (this.get('uPlanner.uGoalComplete')) {
       // END
-      this.init();
+      this.ending();
     } else {
       // advance to next step
       let self = this;
@@ -138,13 +142,31 @@ export default Service.extend({
         let result = uPlanner.uTakeStep(A([self.get('nextChoice')]));
         let [success, nextState, nextPlan, nextOperatorsUsed] = result;
         if (!success) {
-          self.init();
+          self.ending();
         }
         log('uPlanner.uTakeStep', result);
       });
     }
   },
 
+  async ending() {
+    let store = this.get('store');
+    let clip = store.peekRecord('clip', 'epilogue');
+    if (isPresent(clip) && isPresent(clip.get('src'))) {
+      let vid = this.get('video');
+      vid.pause(); // Pause the video before switching the source.
+      this.set('videoMetaLoaded', false); // hide choices until duration loads
+      vid.src = clip.get('src');
+      vid.currentTime = 0;
+      vid.play();
+      vid.volume = 1;
+      // wait while clip plays
+      await this.clipEnded();
+    }
+
+    // return to start screen
+    this.init();
+  },
   durationChange() {
     let video = this.get('video');
     if (isPresent(video) && isPresent(video.duration)) {

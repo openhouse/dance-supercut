@@ -95,6 +95,9 @@ export default Route.extend({
             position: position,
           },
         };
+        if (isPresent(clip.isEpilogue)) {
+          item.attributes.isEpilogue = clip.isEpilogue;
+        }
         if (isPresent(clip.proposition)) {
           item.relationships = {
             proposition: {
