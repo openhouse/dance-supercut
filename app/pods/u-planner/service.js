@@ -31,6 +31,7 @@ import { alias } from '@ember/object/computed';
 
 // const { log } = console;
 const log = () => {};
+
 export default Service.extend({
   store: service(),
 
@@ -284,7 +285,7 @@ export default Service.extend({
     }
     let success = false;
     selections.forEach((operator) => {
-      if (!success) {
+      if (!success && isPresent(operator)) {
         // use the first operator that works
         [success, nextState, nextPlan, nextOperatorsUsed] = this.applyOperator(
           goal,
@@ -395,7 +396,7 @@ export default Service.extend({
     */
 
     /*
-    Prefer operators with a precondition enabled by a new addition
+    Select operators with a precondition enabled by a new addition
     */
     let newAdditionOperators = A([]);
     let notNewAdditionOperators = A([]);
@@ -418,9 +419,9 @@ export default Service.extend({
         notNewAdditionOperators.push(operator);
       }
     });
-    // let sortedOperators = newAdditionOperators.concat(notNewAdditionOperators);
-    let sortedOperators = newAdditionOperators;
+    let sortedOperators = newAdditionOperators.concat(notNewAdditionOperators);
 
+    // prioritize operators from backward search
     if (isPresent(allPlansNextOperators)) {
       sortedOperators = allPlansNextOperators.concat(sortedOperators);
     }
@@ -449,6 +450,36 @@ export default Service.extend({
       }
     });
     selections = selections.uniqBy('name');
+
+    // TRY TO FILTER OUT OPERATORS WITHOUT NEW ADDITIONS
+    newAdditionOperators = A([]);
+    notNewAdditionOperators = A([]);
+    selections.forEach((operator) => {
+      let match = false;
+
+      newAdditions.forEach((proposition) => {
+        if (
+          operator
+            .get('preconditions')
+            .map((precondition) => precondition.get('id'))
+            .includes(proposition.get('id'))
+        ) {
+          match = true;
+        }
+      });
+      if (match) {
+        newAdditionOperators.push(operator);
+      } else {
+        notNewAdditionOperators.push(operator);
+      }
+    });
+    log('newAdditionOperators2', newAdditionOperators);
+    log('notNewAdditionOperators2', notNewAdditionOperators);
+    selections = newAdditionOperators;
+    if (selections.length < 1) {
+      selections = newAdditionOperators.concat(notNewAdditionOperators);
+    }
+    // TRY TO FILTER OUT OPERATORS WITHOUT NEW ADDITIONS
 
     // Any operators that have been used before are
     // moved to the end of the list.
@@ -484,6 +515,7 @@ export default Service.extend({
     currentPlan,
     currentOperatorsUsed
   ) {
+    /*
     log(
       '%c applyOperator - START:',
       'background-color: #55bada',
@@ -493,7 +525,7 @@ export default Service.extend({
       currentPlan,
       currentOperatorsUsed
     );
-
+    */
     let nextState = [...currentState];
     let nextPlan = [...currentPlan];
     let nextOperatorsUsed = [...currentOperatorsUsed];
@@ -565,7 +597,7 @@ export default Service.extend({
       uPlan: nextPlan,
       uOperatorsUsed: nextOperatorsUsed,
     });
-
+    /*
     log(
       '%c applyOperator - END:',
       'background-color: #55bada',
@@ -574,6 +606,7 @@ export default Service.extend({
       nextPlan,
       nextOperatorsUsed
     );
+    */
     return [success, nextState, nextPlan, nextOperatorsUsed];
     /*
     // return [true, nextState, nextPlan, nextOperatorsUsed];
