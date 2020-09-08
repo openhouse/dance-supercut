@@ -391,7 +391,6 @@ export default Service.extend({
     /*
     Select operators with a precondition enabled by a new addition
     */
-    /*
     let newAdditionOperators = A([]);
     let notNewAdditionOperators = A([]);
     operators.forEach((operator) => {
@@ -493,13 +492,14 @@ export default Service.extend({
       selections = newAdditionOperators.concat(notNewAdditionOperators);
     }
     selections = selections.uniqBy('name');
-    */
+    /*
     selections = operators;
     if (isPresent(allPlansNextOperators)) {
       selections = allPlansNextOperators;
     }
+    */
     // preconditions are met by state
-    let stateIds = nextState.map((proposition) => proposition.get('id'));
+    // let stateIds = nextState.map((proposition) => proposition.get('id'));
     selections = selections.filter((operator) => {
       let matchPreconditions = true;
       operator.get('preconditions').forEach((proposition) => {
