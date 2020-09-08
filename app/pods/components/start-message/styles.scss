@@ -12,8 +12,13 @@
   top: 2rem;
   // bottom: calc((-6rem + 100vh) * 0.38);
   bottom: 2rem;
-  left: 19vw;
-  right: 19vw;
+
+  left: 2rem;
+  right: 2rem;
+  @media (min-width: $breakpoint-sm) {
+    left: 19vw;
+    right: 19vw;
+  }
 }
 
 /* ELEMENTS */
