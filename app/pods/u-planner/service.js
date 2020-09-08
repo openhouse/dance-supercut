@@ -418,7 +418,8 @@ export default Service.extend({
         notNewAdditionOperators.push(operator);
       }
     });
-    let sortedOperators = newAdditionOperators.concat(notNewAdditionOperators);
+    // let sortedOperators = newAdditionOperators.concat(notNewAdditionOperators);
+    let sortedOperators = newAdditionOperators;
 
     if (isPresent(allPlansNextOperators)) {
       sortedOperators = allPlansNextOperators.concat(sortedOperators);
@@ -448,6 +449,7 @@ export default Service.extend({
       }
     });
     selections = selections.uniqBy('name');
+
     // Any operators that have been used before are
     // moved to the end of the list.
     selections.forEach((operator) => {
@@ -462,7 +464,7 @@ export default Service.extend({
     log(
       '%c selectOperators - END:',
       'background-color: #da55ba',
-      selections.map((proposition) => proposition.get('id'))
+      selections.map((operator) => operator.get('id'))
     );
     return selections;
   },

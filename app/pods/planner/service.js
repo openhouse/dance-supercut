@@ -21,6 +21,7 @@
   to find a plan to achieve the goals.
 */
 import Service from '@ember/service';
+import ENV from 'let-nyc-dance/config/environment';
 import { inject as service } from '@ember/service';
 import { computed } from '@ember/object';
 import { isPresent } from '@ember/utils';
@@ -28,10 +29,20 @@ import { A, isArray } from '@ember/array';
 
 // const { log } = console;
 const log = () => {};
+
 export default Service.extend({
   store: service(),
+
+  get defaultGoalId() {
+    return ENV.APP.defaultGoalId;
+  },
+  get defaultStateIds() {
+    return ENV.APP.defaultStateId;
+  },
+  /*
   defaultGoalId: 'dream-manifest',
   defaultStateIds: 'dreamer-appears',
+  */
   customGoalId: null,
   customStateIds: null,
   currentPlan: null,
@@ -40,8 +51,10 @@ export default Service.extend({
   init() {
     this._super(...arguments);
     // set default goal and state
-    this.set('defaultGoalId', 'dream-manifest');
-    this.set('defaultStateIds', 'dreamer-appears');
+    /*
+    this.set('defaultGoalId', ENV.APP.defaultGoalId);
+    this.set('defaultStateIds', ENV.APP.defaultStateId);
+    */
   },
 
   resetPlanner() {

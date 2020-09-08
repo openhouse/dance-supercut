@@ -80,6 +80,12 @@ $monospace-font-family: courier, 'Courier New', monospace;
 .space-between {
   justify-content: space-between;
 }
+.space-between {
+  justify-content: space-around;
+}
+.justify-content-center {
+  justify-content: center;
+}
 
 /* SHADOWS */
 $box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 1-$golden-ratio),
@@ -91,13 +97,13 @@ $box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 1-$golden-ratio),
   opacity: 0;
 }
 .opacity-38 {
-  opacity: 100 - $golden-ratio * 100;
+  opacity: 1 - $golden-ratio * 1;
 }
 .opacity-62 {
-  opacity: $golden-ratio * 100;
+  opacity: $golden-ratio * 1;
 }
 .opacity-100 {
-  opacity: 100;
+  opacity: 1;
 }
 
 /* COMPONENTS */
@@ -127,5 +133,20 @@ $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
+
+/*
+  FONTS
+*/
+@font-face {
+  font-family: 'Arial Black';
+  src: url('/s/fonts/Arial-Black.otf');
+}
+$arial-font-family: 'Arial Black', 'Arial Bold', Arial-BoldMT, -apple-system,
+  system-ui, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+  sans-serif;
+
+.arial-font {
+  font-family: $arial-font-family;
+}
 
 @import 'pod-styles';

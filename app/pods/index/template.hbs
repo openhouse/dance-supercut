@@ -1,7 +1,10 @@
-
 <StoryGraph>
   <MultiChoice/>
   {{!-- <StorySettingsSm @operators={{model.operators}}/>--}}
-  <VideoPlayer/>
+  {{#if montage.userHasStarted}}
+    <VideoPlayer/>
+  {{else}}
+    <StartMessage/>
+  {{/if}}
 </StoryGraph>
 {{outlet}}

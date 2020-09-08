@@ -1,4 +1,5 @@
 import Service from '@ember/service';
+import ENV from 'let-nyc-dance/config/environment';
 import { inject as service } from '@ember/service';
 import { computed, observer } from '@ember/object';
 import { alias, sort } from '@ember/object/computed';
@@ -7,8 +8,30 @@ import { A } from '@ember/array';
 const { log } = console;
 
 export default Service.extend({
+  get defaultGoal() {
+    return A([ENV.APP.defaultGoalId]);
+  },
+  get defaultState() {
+    return A([ENV.APP.defaultStateId]);
+  },
+  video: null,
+  videoDuration: null,
+  videoTime: null,
+  videoMetaLoaded: false,
+  currentClip: null,
+  currentStep: alias('uPlanner.uPlan.lastObject'),
+  currentOperator: alias('uPlanner.uPlan.lastObject.operator'),
+  currentClips: null,
+  currentClipsSorting: Object.freeze(['playCount', 'position']),
+  currentClipsSorted: sort('currentClips', 'currentClipsSorting'),
+  nextChoice: null,
+  showChoces: false,
+  userHasStarted: false, // waiting on user to hit play
+
   uPlanner: service(),
   uPlan: alias('uPlanner.uPlan'),
+
+  // choices of next operators for the MultiChoice UI
   choices: computed('allChoices', function () {
     let allChoices = this.get('allChoices');
     if (isPresent('allChoices')) {
@@ -25,23 +48,23 @@ export default Service.extend({
     let uPlanner = this.get('uPlanner');
 
     // intialize interactive plan
-    uPlanner.startInteractive(['dream-manifest'], ['dreamer-appears']);
+    uPlanner.startInteractive(
+      this.get('defaultGoal'),
+      this.get('defaultState')
+    );
     this.set('playing', false);
+    this.set('userHasStarted', false);
   },
 
   // actions
-  video: null,
-  videoDuration: null,
-  videoTime: null,
-  videoMetaLoaded: false,
-  currentClip: null,
-  currentStep: alias('uPlanner.uPlan.lastObject'),
-  currentOperator: alias('uPlanner.uPlan.lastObject.operator'),
-  currentClips: null,
-  currentClipsSorting: Object.freeze(['playCount', 'position']),
-  currentClipsSorted: sort('currentClips', 'currentClipsSorting'),
-  nextChoice: null,
-  showChoces: false,
+
+  // restart at end
+  uGoalCompleteObserver: observer('montage.uGoalComplete', function () {
+    let complete = this.get('montage.uGoalComplete');
+    if (complete) {
+      this.init();
+    }
+  }),
 
   async clipEnded() {
     let vid = this.get('video');
@@ -86,9 +109,8 @@ export default Service.extend({
           vid.src = clip.get('src');
           vid.currentTime = 0;
           vid.play();
-          vid.volume = 1;
-
-          // show choices at min(120 words a minute, clip length)
+          vid.volume = 0;
+          // showing MultiChoice UI is triggered elsewhere by video element events
 
           // wait while clip plays
           await this.clipEnded();
@@ -136,17 +158,21 @@ export default Service.extend({
 
     this.set('video', videoElement);
     let uPlanner = this.get('uPlanner');
-    let result = uPlanner.startInteractive(
-      ['dream-manifest'],
-      ['dreamer-appears']
+    uPlanner.startInteractive(
+      this.get('defaultGoal'),
+      this.get('defaultState')
     );
     this.set('playing', true);
   },
 
+  // trigger play for each new operator
   // detect when currentOperator has advanced and play operator
   onNextOperator: observer('currentStep', 'playing', function () {
     if (this.get('playing') && isPresent(this.get('currentStep'))) {
-      this.playStep();
+      if (this.get('userHasStarted')) {
+        // user has to hit play to kick it off
+        this.playStep();
+      }
     }
   }),
 });

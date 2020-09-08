@@ -54,9 +54,9 @@ export default Component.extend({
     }
     return null;
   }),
+
   // reset chosen when operator changes
   currentOperatorObserver: observer('montage.currentOperator', function () {
-    log('currentOperatorObserver');
     this.set('chosen', null);
   }),
 
